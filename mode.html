@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Mode Selection - DEVIL PREDICTOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#10b981;--primary-light:#34d399;--primary-dark:#059669;
+  --cyan:#22d3ee;--cyan-light:#67e8f9;
+  --lime:#84cc16;
+  --bg:#0a0f0a;--card:#0d1a0d;--card-border:rgba(16,185,129,0.15);
+  --text:#f1f5f9;--text-dim:#64748b;--green:#10b981;--red:#ef4444}
+html,body{height:100%;width:100%;margin:0;padding:0;overflow:hidden;position:fixed;background:var(--bg)}
+body{display:flex;justify-content:center;align-items:center;font-family:'Exo 2',sans-serif}
+#shell{width:100%;height:100vh;position:relative;overflow-y:auto;overflow-x:hidden;background:var(--bg);scrollbar-width:none}
+#shell::-webkit-scrollbar{display:none}
+.screen{min-height:100vh;padding:24px 18px 110px;display:flex;flex-direction:column;gap:0;position:relative}
+
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.25}
+.orb1{width:350px;height:350px;background:var(--primary-dark);top:-80px;left:-80px;animation:orbFloat1 20s ease-in-out infinite}
+.orb2{width:280px;height:280px;background:var(--cyan);bottom:-60px;right:-60px;animation:orbFloat2 24s ease-in-out infinite}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-60px)}}
+
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(16,185,129,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.03) 1px,transparent 1px);
+  background-size:40px 40px}
+
+.content{position:relative;z-index:1;max-width:440px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* BACK BTN */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--card);border:1px solid var(--card-border);
+  padding:8px 16px;border-radius:12px;color:var(--text-dim);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .3s;text-decoration:none;
+  margin-bottom:4px;align-self:flex-start}
+.back-btn:active{border-color:var(--primary);color:var(--primary-light)}
+.back-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* GAME BANNER */
+.game-banner{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;overflow:hidden;position:relative;height:140px}
+.game-banner img{width:100%;height:100%;object-fit:cover}
+.game-banner::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:50%;
+  background:linear-gradient(to top,var(--card),transparent)}
+.game-banner-name{
+  position:absolute;bottom:12px;left:12px;z-index:2;
+  font-family:'Orbitron';font-size:18px;font-weight:800;color:#fff;
+  text-shadow:0 2px 10px rgba(0,0,0,0.5)}
+
+/* GAME INFO */
+.game-info{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px}
+.game-logo-sm{width:44px;height:44px;border-radius:12px;overflow:hidden;flex-shrink:0}
+.game-logo-sm img{width:100%;height:100%;object-fit:cover}
+.game-details{flex:1}
+.game-title{font-family:'Orbitron';font-size:14px;font-weight:700;color:var(--text)}
+.game-tag{
+  display:inline-block;margin-top:3px;
+  background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);
+  padding:2px 8px;border-radius:6px;font-size:8px;color:var(--primary-light);
+  font-weight:600;letter-spacing:1px}
+.status-row{display:flex;align-items:center;gap:5px;margin-top:4px}
+.status-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite}
+.status-text{font-size:9px;color:var(--text-dim)}
+.status-text span{color:var(--green);font-weight:600}
+
+/* SECTION */
+.section-title{font-family:'Orbitron';font-size:11px;font-weight:700;color:var(--text);letter-spacing:2px;padding:6px 0}
+
+/* TIMER CARDS */
+.timer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.timer-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;
+  transition:all .3s}
+.timer-card:active{transform:scale(.96)}
+.timer-card.selected{
+  background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(34,211,238,0.1));
+  border-color:var(--primary);
+  box-shadow:0 0 16px rgba(16,185,129,0.2)}
+.timer-icon{
+  width:46px;height:46px;margin:0 auto 8px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  transition:all .3s}
+.timer-card.selected .timer-icon{background:rgba(16,185,129,0.2);border-color:var(--primary)}
+.timer-icon svg{width:22px;height:22px;stroke:var(--text-dim);fill:none;stroke-width:2;transition:all .3s}
+.timer-card.selected .timer-icon svg{stroke:var(--primary-light)}
+.timer-val{font-family:'Orbitron';font-size:14px;font-weight:700;color:var(--text);margin-bottom:1px}
+.timer-desc{font-size:9px;color:var(--text-dim)}
+
+/* MODE CARDS */
+.mode-stack{display:flex;flex-direction:column;gap:10px}
+.mode-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .3s}
+.mode-card:active{transform:scale(.98)}
+.mode-card.selected{
+  background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.08));
+  border-color:var(--primary)}
+.mode-icon{
+  width:46px;height:46px;background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.2);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .3s}
+.mode-card.selected .mode-icon{background:rgba(16,185,129,0.2);border-color:var(--primary)}
+.mode-icon svg{width:22px;height:22px;stroke:var(--text-dim);fill:none;stroke-width:2;transition:all .3s}
+.mode-card.selected .mode-icon svg{stroke:var(--primary-light)}
+.mode-info{flex:1}
+.mode-name{font-family:'Orbitron';font-size:13px;font-weight:700;color:var(--text);margin-bottom:1px}
+.mode-desc{font-size:9px;color:var(--text-dim)}
+.check-circle{
+  width:22px;height:22px;border:2px solid var(--card-border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.mode-card.selected .check-circle{background:var(--primary);border-color:var(--primary)}
+.check-circle svg{width:10px;height:10px;stroke:var(--bg);fill:none;stroke-width:3;opacity:0;transition:opacity .3s}
+.mode-card.selected .check-circle svg{opacity:1}
+
+/* CONTINUE BAR */
+.continue-bar{
+  position:fixed;bottom:0;left:0;right:0;padding:12px;z-index:100;
+  background:linear-gradient(to top,var(--bg) 70%,transparent)}
+.continue-btn{
+  width:100%;max-width:420px;margin:0 auto;display:flex;align-items:center;
+  justify-content:center;gap:8px;padding:14px;border:none;border-radius:12px;
+  font-family:'Orbitron';font-size:13px;font-weight:700;cursor:not-allowed;
+  transition:all .3s;background:rgba(255,255,255,0.03);color:var(--text-dim);
+  letter-spacing:1px}
+.continue-btn.ready{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(16,185,129,0.4)}
+.continue-btn.ready:active{transform:scale(.97)}
+.continue-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* PARTICLES */
+.ptcl{position:fixed;width:2px;height:2px;background:var(--primary-light);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.6}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* FADE UP */
+.fd{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fd.vis{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+<div class="grid-bg"></div>
+<div id="particles"></div>
+
+<div id="shell">
+<div class="screen">
+<div class="content">
+
+<a href="home.html" class="back-btn">
+  <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  BACK
+</a>
+
+<!-- GAME BANNER -->
+<div class="game-banner fd">
+  <img id="bannerImg" src="image1.png">
+  <div class="game-name-display" id="bannerName">LOADING...</div>
+</div>
+
+<!-- GAME INFO -->
+<div class="game-info fd" style="transition-delay:.1s">
+  <div class="game-logo-sm">
+    <img id="logoImg" src="image1.png">
+  </div>
+  <div class="game-details">
+    <div class="game-title" id="gameTitle">-</div>
+    <span class="game-tag">AI SYNCED</span>
+    <div class="status-row">
+      <span class="status-dot"></span>
+      <span class="status-text">Quantum AI <span>Connected</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div class="section-title fd" style="transition-delay:.15s">SELECT TIMER</div>
+<div class="timer-grid fd" style="transition-delay:.2s">
+  <div class="timer-card" data-timer="30sec" onclick="selTimer(this)">
+    <div class="timer-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="timer-val">30 SEC</div>
+    <div class="timer-desc">Fast Mode</div>
+  </div>
+  <div class="timer-card" data-timer="1min" onclick="selTimer(this)">
+    <div class="timer-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="timer-val">1 MIN</div>
+    <div class="timer-desc">Stable Mode</div>
+  </div>
+</div>
+
+<!-- MODE -->
+<div class="section-title fd" style="transition-delay:.25s">SELECT MODE</div>
+<div class="mode-stack fd" style="transition-delay:.3s">
+  <div class="mode-card" data-mode="bigsmall" onclick="selMode(this)">
+    <div class="mode-icon">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">BIG / SMALL</div>
+      <div class="mode-desc">Predict 0-4 or 5-9</div>
+    </div>
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+  <div class="mode-card" data-mode="number" onclick="selMode(this)">
+    <div class="mode-icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">NUMBER MODE</div>
+      <div class="mode-desc">Predict exact 0-9</div>
+    </div>
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div class="continue-bar">
+  <button class="continue-btn" id="continueBtn" onclick="cont()">
+    <span>CONTINUE</span>
+    <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </button>
+</div>
+
+<script>
+const games={
+  'okwin':{name:'OKWIN',img:'image1.png'},
+  '51game':{name:'51 GAME',img:'image2.png'},
+  '55club':{name:'55 CLUB',img:'image3.png'},
+  '82lottery':{name:'82 LOTTERY',img:'image4.png'},
+  'dmwin':{name:'DM WIN',img:'image5.png'},
+  'jaiclub':{name:'JAI CLUB',img:'image6.png'},
+  'yaarwin':{name:'YAARWIN',img:'image7.png'},
+  'bdgwin':{name:'BDG WIN',img:'image8.png'},
+  'bigmumbai':{name:'BIG MUMBAI',img:'image9.png'},
+  'tiranga':{name:'TIRANGA',img:'image10.png'},
+  'tashanwin':{name:'TASHAN WIN',img:'image11.png'},
+  'sikkim':{name:'SIKKIM',img:'image12.png'}
+};
+
+let selectedGame=localStorage.getItem('selectedGame')||'okwin';
+let timerSelected=null;
+let modeSelected=null;
+
+function init(){
+  const game=games[selectedGame]||games['okwin'];
+  document.getElementById('gameTitle').textContent=game.name;
+  document.getElementById('bannerName').textContent=game.name;
+  document.getElementById('bannerImg').src=game.img;
+  document.getElementById('logoImg').src=game.img;
+}
+
+function selTimer(el){
+  if(timerSelected)timerSelected.classList.remove('selected');
+  if(timerSelected===el){timerSelected=null}
+  else{el.classList.add('selected');timerSelected=el;navigator.vibrate(10)}
+  chk();
+}
+
+function selMode(el){
+  if(modeSelected)modeSelected.classList.remove('selected');
+  if(modeSelected===el){modeSelected=null}
+  else{el.classList.add('selected');modeSelected=el;navigator.vibrate(10)}
+  chk();
+}
+
+function chk(){
+  const btn=document.getElementById('continueBtn');
+  if(timerSelected&&modeSelected)btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+function cont(){
+  if(!timerSelected||!modeSelected)return;
+  localStorage.setItem('selectedTimer',timerSelected.dataset.timer);
+  localStorage.setItem('predictionMode',modeSelected.dataset.mode);
+  localStorage.setItem('selectedGame',selectedGame);
+  window.location.href='prediction.html';
+}
+
+init();
+
+// Particles
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');
+    p.className='ptcl';
+    const s=Math.random()*2.5+1;
+    const d=Math.random()*16+10;
+    const dl=Math.random()*18;
+    const l=Math.random()*100;
+    const dr=(Math.random()-.5)*100;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${l}%;animation:drift ${d}s ${dl}s linear infinite`;
+    p.animate([
+      {opacity:0,transform:`translateY(100vh) translateX(0) scale(0)`},
+      {opacity:.6,offset:.15},{opacity:.6,offset:.85},
+      {opacity:0,transform:`translateY(-10vh) translateX(${dr}px) scale(1)`}
+    ],{duration:d*1000,delay:dl*1000,iterations:Infinity,easing:'linear'});
+    c.appendChild(p);
+  }
+})();
+
+// Fade-up
+(function(){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fd').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>

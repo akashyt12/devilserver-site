@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>DEVIL PREDICTOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#10b981;
+  --primary-light:#34d399;
+  --primary-dark:#059669;
+  --cyan:#22d3ee;
+  --cyan-light:#67e8f9;
+  --lime:#84cc16;
+  --bg:#0a0f0a;
+  --card:#0d1a0d;
+  --card-border:rgba(16,185,129,0.15);
+  --text:#f1f5f9;
+  --text-dim:#64748b;
+}
+html,body{height:100%;width:100%;margin:0;padding:0;overflow:hidden;position:fixed;background:var(--bg)}
+body{display:flex;justify-content:center;align-items:center;font-family:'Exo 2',sans-serif}
+
+#shell{width:100%;height:100vh;position:relative;overflow-y:auto;overflow-x:hidden;background:var(--bg);scrollbar-width:none}
+#shell::-webkit-scrollbar{display:none}
+
+.screen{min-height:100vh;padding:16px 18px 110px;display:flex;flex-direction:column;gap:0;position:relative}
+
+/* ANIMATED BG */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.25}
+.orb1{width:350px;height:350px;background:var(--primary-dark);top:-80px;left:-80px;animation:orbFloat1 20s ease-in-out infinite}
+.orb2{width:280px;height:280px;background:var(--cyan);bottom:-60px;right:-60px;animation:orbFloat2 24s ease-in-out infinite}
+.orb3{width:200px;height:200px;background:var(--lime);top:40%;left:60%;animation:orbFloat3 18s ease-in-out infinite}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.1)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,-60px) scale(1.05)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,30px) scale(.9)}}
+
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(16,185,129,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(16,185,129,0.03) 1px,transparent 1px);
+  background-size:40px 40px}
+
+/* PARTICLES */
+.ptcl{position:fixed;width:2px;height:2px;background:var(--primary-light);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.6}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* CONTENT */
+.content{position:relative;z-index:1;max-width:440px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* HEADER CARD */
+.header-card{
+  background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.08));
+  border:1px solid var(--card-border);
+  border-radius:16px;
+  padding:16px 16px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.header-card::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(16,185,129,0.1),transparent,rgba(34,211,238,0.1),transparent);
+  animation:headerSpin 8s linear infinite}
+@keyframes headerSpin{to{transform:rotate(360deg)}}
+.header-card>*{position:relative;z-index:1}
+
+.logo-ring{
+  width:70px;height:70px;margin:0 auto 10px;
+  border-radius:50%;padding:3px;
+  background:conic-gradient(var(--primary),var(--cyan),var(--lime),var(--primary));
+  animation:logoPulse 3s ease-in-out infinite}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 20px rgba(16,185,129,0.4)}50%{box-shadow:0 0 40px rgba(16,185,129,0.7)}}
+.logo-inner{
+  width:100%;height:100%;border-radius:50%;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo-inner img{width:70px;height:70px;object-fit:cover;border-radius:50%}
+.devil-logo-text{
+  font-family:'Orbitron';font-size:18px;font-weight:900;
+  color:var(--primary-light);text-shadow:0 0 20px rgba(16,185,129,0.6);
+  letter-spacing:2px}
+
+.app-title{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--primary-light),var(--cyan-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;margin-bottom:2px}
+.app-subtitle{font-size:11px;color:var(--text-dim);letter-spacing:3px;font-weight:600}
+
+.status-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+  padding:4px 12px;border-radius:16px;margin-top:10px;font-size:10px;
+  color:#10b981;font-weight:600;letter-spacing:1px}
+.status-dot{width:6px;height:6px;background:#10b981;border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* STATS ROW */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:12px 6px;text-align:center;
+  transition:all .3s}
+.stat-card:active{transform:scale(.96);border-color:var(--primary)}
+.stat-val{font-family:'Orbitron';font-size:20px;font-weight:800;color:var(--primary-light)}
+.stat-lbl{font-size:8px;color:var(--text-dim);margin-top:3px;letter-spacing:1.5px;font-weight:600}
+
+/* SECTION */
+.section-head{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.section-title{font-family:'Orbitron';font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);
+  padding:5px 12px;border-radius:16px;font-size:10px;color:#10b981;font-weight:600}
+.live-dot{width:5px;height:5px;background:#10b981;border-radius:50%;animation:blink 1s infinite}
+
+/* GAME CARDS */
+.games-grid{display:flex;flex-direction:column;gap:14px}
+.game-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;overflow:hidden;position:relative;
+  transition:all .3s ease}
+
+.game-card:active{transform:scale(.98);border-color:var(--primary)}
+
+.card-banner{position:relative;height:130px;overflow:hidden}
+.card-banner img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.game-card:active .card-banner img{transform:scale(1.05)}
+.card-banner::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:60%;
+  background:linear-gradient(to top,var(--card),transparent)}
+
+.badge{
+  position:absolute;top:10px;right:10px;
+  padding:4px 10px;border-radius:8px;
+  font-size:8px;font-weight:800;letter-spacing:.5px;z-index:2;
+  backdrop-filter:blur(8px)}
+.badge-hot{background:rgba(239,68,68,0.9);color:#fff}
+.badge-live{background:rgba(16,185,129,0.9);color:#fff}
+.badge-new{background:rgba(59,130,246,0.9);color:#fff}
+.badge-vip{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff}
+
+.card-body{padding:10px 14px}
+.card-name{font-family:'Orbitron';font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.card-desc{font-size:10px;color:var(--text-dim);margin-bottom:10px}
+
+.card-btns{display:flex;gap:6px}
+.btn-play{
+  flex:1;padding:10px;border:none;border-radius:10px;
+  font-family:'Exo 2';font-size:10px;font-weight:700;cursor:pointer;
+  transition:all .3s;letter-spacing:.5px}
+.btn-1m{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+  box-shadow:0 4px 15px rgba(16,185,129,0.3)}
+.btn-1m:active{transform:scale(.96);box-shadow:0 2px 8px rgba(16,185,129,0.4)}
+.btn-30s{
+  background:transparent;color:var(--cyan);
+  border:1px solid rgba(34,211,238,0.3)}
+.btn-30s:active{background:rgba(34,211,238,0.1);border-color:var(--cyan)}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  background:rgba(10,15,10,0.9);border-top:1px solid var(--card-border);
+  padding:8px 20px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.nav-row{display:flex;justify-content:space-around;align-items:center}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 16px;border-radius:10px;cursor:pointer;transition:all .3s;text-decoration:none}
+.nav-item.active{background:rgba(16,185,129,0.1)}
+.nav-item svg{width:20px;height:20px;stroke:var(--text-dim);fill:none;stroke-width:2;transition:all .3s}
+.nav-item.active svg{stroke:var(--primary-light)}
+.nav-item span{font-size:8px;color:var(--text-dim);font-weight:600;letter-spacing:.5px;transition:all .3s}
+.nav-item.active span{color:var(--primary-light)}
+
+/* PARTICLES */
+.ptcl{position:fixed;width:2px;height:2px;background:var(--primary-light);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.6}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* FADE UP */
+.fd{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fd.vis{opacity:1;transform:translateY(0)}
+
+/* LOGOUT OVERLAY */
+.lg-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(6,13,6,.85);backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s ease}
+.lg-overlay.show{opacity:1;pointer-events:auto}
+
+.lg-box{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:20px;padding:28px 24px;width:90%;max-width:320px;
+  text-align:center;transform:scale(.9);transition:transform .3s ease;
+  position:relative;overflow:hidden}
+.lg-overlay.show .lg-box{transform:scale(1)}
+.lg-box::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--primary),transparent)}
+
+.lg-icon{
+  width:60px;height:60px;margin:0 auto 16px;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  animation:lgPulse 2s ease-in-out infinite}
+@keyframes lgPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.15)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.lg-icon svg{width:28px;height:28px;stroke:#ef4444;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.lg-title{font-family:'Orbitron';font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
+.lg-sub{font-size:12px;color:var(--text-dim);margin-bottom:22px;line-height:1.5}
+
+.lg-btns{display:flex;gap:10px}
+.lg-btn{
+  flex:1;padding:12px;border:none;border-radius:12px;
+  font-family:'Orbitron';font-size:11px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:all .3s ease}
+.lg-btn:active{transform:scale(.95)}
+.lg-yes{
+  background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;
+  box-shadow:0 4px 16px rgba(239,68,68,.3)}
+.lg-yes:hover{box-shadow:0 6px 24px rgba(239,68,68,.4)}
+.lg-no{
+  background:rgba(255,255,255,.04);border:1px solid var(--card-border);
+  color:var(--text-dim)}
+.lg-no:hover{background:rgba(255,255,255,.08);color:var(--text)}
+
+/* LOGGING OUT ANIMATION */
+.lg-anim{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  opacity:0;pointer-events:none;transition:opacity .4s ease}
+.lg-anim.show{opacity:1;pointer-events:auto}
+
+.lg-spinner{
+  width:60px;height:60px;border-radius:50%;
+  border:3px solid rgba(16,185,129,.15);
+  border-top-color:var(--primary);
+  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.lg-anim-text{
+  font-family:'Orbitron';font-size:14px;font-weight:700;
+  color:var(--primary-light);letter-spacing:3px;
+  animation:lgBlink 1.5s ease-in-out infinite}
+@keyframes lgBlink{0%,100%{opacity:1}50%{opacity:.4}}
+
+.lg-anim-dots{display:flex;gap:6px}
+.lg-anim-dots span{
+  width:8px;height:8px;border-radius:50%;background:var(--primary);
+  animation:dotBounce .6s ease-in-out infinite}
+.lg-anim-dots span:nth-child(2){animation-delay:.15s}
+.lg-anim-dots span:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-8px);opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="grid-bg"></div>
+<div id="particles"></div>
+
+<div id="shell">
+<div class="screen">
+<div class="content">
+
+<!-- HEADER -->
+<div class="header-card fd">
+  <div class="logo-ring">
+    <div class="logo-inner">
+      <div class="devil-logo-text">DEVIL</div>
+    </div>
+  </div>
+  <div class="app-title">DEVIL PREDICTOR</div>
+  <div class="app-subtitle">AI POWERED ENGINE</div>
+  <div class="status-pill">
+    <span class="status-dot"></span>
+    ALL SYSTEMS ONLINE
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats fd" style="transition-delay:.1s">
+  <div class="stat-card">
+    <div class="stat-val">12</div>
+    <div class="stat-lbl">GAMES</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">2</div>
+    <div class="stat-lbl">MODES</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">AI</div>
+    <div class="stat-lbl">POWERED</div>
+  </div>
+</div>
+
+<!-- SECTION -->
+<div class="section-head fd" style="transition-delay:.15s">
+  <div class="section-title">SELECT GAME</div>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    ALL LIVE
+  </div>
+</div>
+
+<!-- GAMES -->
+<div class="games-grid" id="gamesGrid"></div>
+
+</div>
+</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-row">
+    <a href="home.html" class="nav-item active">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>HOME</span>
+    </a>
+    <a href="support.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>SUPPORT</span>
+    </a>
+    <a href="#" class="nav-item" onclick="doLogout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>LOGOUT</span>
+    </a>
+  </div>
+</nav>
+
+<!-- LOGOUT CONFIRM -->
+<div class="lg-overlay" id="lgOverlay">
+  <div class="lg-box">
+    <div class="lg-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </div>
+    <div class="lg-title">LOGOUT?</div>
+    <div class="lg-sub">Are you sure you want to logout? You will need your access key to login again.</div>
+    <div class="lg-btns">
+      <button class="lg-btn lg-no" onclick="closeLogout()">CANCEL</button>
+      <button class="lg-btn lg-yes" onclick="confirmLogout()">YES</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGGING OUT ANIMATION -->
+<div class="lg-anim" id="lgAnim">
+  <div class="lg-spinner"></div>
+  <div class="lg-anim-text">LOGGING OUT</div>
+  <div class="lg-anim-dots"><span></span><span></span><span></span></div>
+</div>
+
+<script>
+const games=[
+  {key:'okwin',name:'OKWIN',desc:'Instant Win Games',img:'image1.png',badge:'hot'},
+  {key:'51game',name:'51 GAME',desc:'Color Prediction',img:'image2.png',badge:'live'},
+  {key:'55club',name:'55 CLUB',desc:'Number Games',img:'image3.png',badge:'hot'},
+  {key:'82lottery',name:'82 LOTTERY',desc:'Lottery Draws',img:'image4.png',badge:'new'},
+  {key:'dmwin',name:'DM WIN',desc:'Quick Win Games',img:'image5.png',badge:'hot'},
+  {key:'jaiclub',name:'JAI CLUB',desc:'Premium Games',img:'image6.png',badge:'vip'},
+  {key:'yaarwin',name:'YAARWIN',desc:'Fast Win Games',img:'image7.png',badge:'hot'},
+  {key:'bdgwin',name:'BDG WIN',desc:'Live Games',img:'image8.png',badge:'live'},
+  {key:'bigmumbai',name:'BIG MUMBAI',desc:'Trending Games',img:'image9.png',badge:'vip'},
+  {key:'tiranga',name:'TIRANGA',desc:'Live Prediction',img:'image10.png',badge:'live'},
+  {key:'tashanwin',name:'TASHAN WIN',desc:'Best Win Games',img:'image11.png',badge:'hot'},
+  {key:'sikkim',name:'SIKKIM',desc:'New Win Games',img:'image12.png',badge:'new'}
+];
+
+function renderGames(){
+  const grid=document.getElementById('gamesGrid');
+  grid.innerHTML=games.map(g=>`
+    <div class="game-card">
+      <div class="card-banner">
+        <img src="${g.img}" alt="${g.name}" loading="lazy">
+        <span class="badge badge-${g.badge}">${g.badge.toUpperCase()}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${g.name}</div>
+        <div class="card-desc">${g.desc}</div>
+        <div class="card-btns">
+          <button class="btn-play btn-1m" onclick="go('${g.key}','1min')">1 MIN</button>
+          <button class="btn-play btn-30s" onclick="go('${g.key}','30sec')">30 SEC</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function go(key,timer){
+  localStorage.setItem('selectedGame',key);
+  localStorage.setItem('selectedTimer',timer);
+  window.location.href='mode.html';
+}
+
+function doLogout(){
+  document.getElementById('lgOverlay').classList.add('show');
+}
+
+function closeLogout(){
+  document.getElementById('lgOverlay').classList.remove('show');
+}
+
+function confirmLogout(){
+  document.getElementById('lgOverlay').classList.remove('show');
+  document.getElementById('lgAnim').classList.add('show');
+  setTimeout(()=>{
+    localStorage.clear();
+    window.location.href='welcome.html';
+  },1800);
+}
+
+// Particles - premium drift
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');
+    p.className='ptcl';
+    const s=Math.random()*2.5+1;
+    const d=Math.random()*16+10;
+    const dl=Math.random()*18;
+    const l=Math.random()*100;
+    const dr=(Math.random()-.5)*100;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${l}%;animation:drift ${d}s ${dl}s linear infinite`;
+    p.animate([
+      {opacity:0,transform:`translateY(100vh) translateX(0) scale(0)`},
+      {opacity:.6,offset:.15},{opacity:.6,offset:.85},
+      {opacity:0,transform:`translateY(-10vh) translateX(${dr}px) scale(1)`}
+    ],{duration:d*1000,delay:dl*1000,iterations:Infinity,easing:'linear'});
+    c.appendChild(p);
+  }
+})();
+
+// Fade-up observer
+(function(){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fd').forEach(el=>obs.observe(el));
+})();
+
+renderGames();
+</script>
+</body>
+</html>

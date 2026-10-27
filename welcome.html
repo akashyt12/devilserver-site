@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DEVIL PREDICTOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g1:#10b981;--g2:#34d399;--g3:#059669;--g4:#6ee7b7;
+  --bg:#060d06;--card:rgba(16,185,129,.04);--border:rgba(16,185,129,.12);
+  --text:#f0fdf4;--dim:#4ade80;--muted:#166534;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+
+/* BG EFFECTS */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);
+  background-size:50px 50px;z-index:0;pointer-events:none;
+}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);z-index:0;pointer-events:none;opacity:.3}
+.orb-a{width:500px;height:500px;background:rgba(16,185,129,.35);top:-150px;left:-120px;animation:ob1 16s ease-in-out infinite}
+.orb-b{width:400px;height:400px;background:rgba(5,150,105,.3);bottom:-120px;right:-80px;animation:ob2 20s ease-in-out infinite}
+.orb-c{width:280px;height:280px;background:rgba(52,211,153,.2);top:45%;left:55%;animation:ob3 14s ease-in-out infinite}
+@keyframes ob1{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,50px)}}
+@keyframes ob2{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-70px)}}
+@keyframes ob3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
+
+/* PARTICLES */
+.ptcl{position:fixed;width:2px;height:2px;background:var(--g1);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.7}90%{opacity:.7}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* PAGE */
+.page{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px}
+
+/* FADE */
+.fd{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fd.vis{opacity:1;transform:translateY(0)}
+
+/* STATUS */
+.sts{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 20px;border-radius:100px;
+  background:rgba(6,13,6,.7);backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  font-family:'Orbitron';font-size:9px;font-weight:600;letter-spacing:3px;color:var(--dim);text-transform:uppercase;
+}
+.sts-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);box-shadow:0 0 10px var(--g1);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* LOGO */
+.logo-sec{margin-top:60px;margin-bottom:12px;position:relative}
+.logo-float{animation:logoF 5s ease-in-out infinite;transform-style:preserve-3d}
+@keyframes logoF{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.logo-rings{position:absolute;inset:-30px;pointer-events:none}
+.ring{position:absolute;inset:0;border:1px solid rgba(16,185,129,.15);border-radius:50%;animation:ringP 3s ease-in-out infinite}
+.ring:nth-child(2){inset:-20px;animation-delay:.7s;opacity:.5}
+@keyframes ringP{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.08);opacity:.6}}
+.logo-box{
+  width:110px;height:110px;border-radius:22px;
+  background:rgba(16,185,129,.05);border:1px solid var(--border);
+  backdrop-filter:blur(30px);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 80px rgba(16,185,129,.12),0 0 160px rgba(16,185,129,.05);position:relative;z-index:2;
+}
+.logo-core{
+  width:64px;height:64px;border-radius:16px;
+  background:linear-gradient(135deg,var(--g1),var(--g3));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(16,185,129,.4);
+}
+.logo-core svg{width:32px;height:32px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+
+/* TITLE */
+.title-sec{text-align:center;margin-bottom:16px}
+.t-devil{font-family:'Orbitron';font-size:40px;font-weight:900;color:#fff;letter-spacing:4px;line-height:1}
+.t-pred{
+  font-family:'Orbitron';font-size:40px;font-weight:900;line-height:1;letter-spacing:4px;
+  background:linear-gradient(135deg,var(--g1),var(--g2),var(--g4));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sub{
+  font-family:'Exo 2';font-size:11px;font-weight:600;color:var(--muted);
+  letter-spacing:5px;margin-top:10px;text-transform:uppercase;
+}
+.ver{
+  display:inline-flex;align-items:center;margin-top:10px;
+  padding:5px 14px;border-radius:100px;
+  background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);
+  font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--g1);letter-spacing:2px;
+}
+
+/* FEATURES */
+.feat{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
+.feat-card{
+  width:90px;padding:14px 8px 12px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:all .3s ease;cursor:default;
+}
+.feat-card:hover{transform:translateY(-5px);border-color:rgba(16,185,129,.3);box-shadow:0 8px 30px rgba(16,185,129,.1)}
+.feat-ico{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+  display:flex;align-items:center;justify-content:center;
+}
+.feat-ico svg{width:20px;height:20px;color:var(--g1)}
+.feat-lbl{font-family:'Orbitron';font-size:9px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+
+/* STATS */
+.stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
+.stat{
+  padding:14px 22px;border-radius:14px;
+  background:var(--card);border:1px solid var(--border);
+  backdrop-filter:blur(20px);text-align:center;min-width:120px;
+  transition:all .3s ease;
+}
+.stat:hover{border-color:rgba(16,185,129,.25);transform:translateY(-3px)}
+.stat-val{
+  font-family:'Orbitron';font-size:22px;font-weight:900;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.2;
+}
+.stat-lbl{font-family:'Exo 2';font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+
+/* BUTTONS */
+.btns{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
+.btn{
+  height:48px;padding:0 28px;border-radius:12px;
+  font-family:'Orbitron';font-size:12px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;border:none;display:inline-flex;align-items:center;gap:10px;
+  transition:all .3s ease;text-decoration:none;text-transform:uppercase;
+}
+.btn:active{transform:scale(.96)}
+.btn-p{
+  background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;
+  box-shadow:0 4px 24px rgba(16,185,129,.35);
+}
+.btn-p:hover{box-shadow:0 8px 40px rgba(16,185,129,.5);transform:translateY(-2px)}
+.btn-p svg{width:18px;height:18px;transition:transform .3s}
+.btn-p:hover svg{transform:translateX(3px)}
+.btn-s{
+  background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);color:var(--g1);
+}
+.btn-s:hover{background:rgba(16,185,129,.1);transform:translateY(-2px)}
+.btn-s svg{width:18px;height:18px}
+
+/* FOOTER */
+.foot{
+  padding:14px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.foot-txt{font-family:'Orbitron';font-size:8px;font-weight:600;color:#14532d;letter-spacing:4px;text-transform:uppercase}
+.foot svg{width:18px;height:18px;color:var(--g1);opacity:.4}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .t-devil,.t-pred{font-size:32px;letter-spacing:2px}
+  .sub{font-size:9px;letter-spacing:3px}
+  .feat{gap:6px}
+  .feat-card{width:85px;padding:12px 8px 10px}
+  .stats{gap:8px}
+  .stat{padding:14px 20px;min-width:90px}
+  .stat-val{font-size:18px}
+  .btn{height:44px;padding:0 24px;font-size:10px}
+  .logo-box{width:90px;height:90px}
+  .logo-core{width:54px;height:54px}
+  .logo-core svg{width:26px;height:26px}
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+<div class="orb orb-c"></div>
+<div id="particles"></div>
+
+<div class="page">
+
+<!-- STATUS -->
+<div class="sts fd">
+  <div class="sts-dot"></div>
+  AI ENGINE ACTIVE
+</div>
+
+<!-- LOGO -->
+<div class="logo-sec fd" style="transition-delay:.1s">
+  <div class="logo-float">
+    <div class="logo-rings">
+      <div class="ring"></div>
+      <div class="ring"></div>
+    </div>
+    <div class="logo-box">
+      <div class="logo-core">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TITLE -->
+<div class="title-sec fd" style="transition-delay:.15s">
+  <div class="t-devil">DEVIL</div>
+  <div class="t-pred">PREDICTOR</div>
+  <div class="sub">QUANTUM AI ENGINE</div>
+  <div class="ver">v4.0 PRO</div>
+</div>
+
+<!-- FEATURES -->
+<div class="feat fd" style="transition-delay:.2s">
+  <div class="feat-card">
+    <div class="feat-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <div class="feat-lbl">Secure</div>
+  </div>
+  <div class="feat-card">
+    <div class="feat-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div class="feat-lbl">Real-Time</div>
+  </div>
+  <div class="feat-card">
+    <div class="feat-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="feat-lbl">Fast</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats fd" style="transition-delay:.25s">
+  <div class="stat">
+    <div class="stat-val">99%</div>
+    <div class="stat-lbl">Accuracy</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">24/7</div>
+    <div class="stat-lbl">Online</div>
+  </div>
+</div>
+
+<!-- BUTTONS -->
+<div class="btns fd" style="transition-delay:.3s">
+  <a href="login.html" class="btn btn-p">
+    GET STARTED
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+  <a href="https://t.me/LORD_x_STYLO" target="_blank" class="btn btn-s">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+    TELEGRAM
+  </a>
+</div>
+
+<!-- FOOTER -->
+<div class="foot fd" style="transition-delay:.4s">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 2-1.5 3.5-3 4.5V12h2a4 4 0 1 1 0 8h-2v-2a4 4 0 1 1-4-4V4a4 4 0 0 1 4-4z"/></svg>
+  <div class="foot-txt">SECURE &bull; QUANTUM &bull; FAST</div>
+</div>
+
+</div>
+
+<script>
+// Particles
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='ptcl';
+    const s=Math.random()*2.5+1;
+    const d=Math.random()*16+10;
+    const dl=Math.random()*18;
+    const l=Math.random()*100;
+    const dr=(Math.random()-.5)*100;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${l}%;animation:drift ${d}s ${dl}s linear infinite`;
+    p.animate([
+      {opacity:0,transform:`translateY(100vh) translateX(0) scale(0)`},
+      {opacity:.6,offset:.15},{opacity:.6,offset:.85},
+      {opacity:0,transform:`translateY(-10vh) translateX(${dr}px) scale(1)`}
+    ],{duration:d*1000,delay:dl*1000,iterations:Infinity,easing:'linear'});
+    c.appendChild(p);
+  }
+})();
+
+// Fade-up observer
+(function(){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fd').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>

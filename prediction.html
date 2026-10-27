@@ -1,0 +1,570 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Prediction - DEVIL PREDICTOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#10b981;--primary-light:#34d399;--primary-dark:#059669;
+  --cyan:#22d3ee;--cyan-light:#67e8f9;
+  --lime:#84cc16;
+  --bg:#0a0f0a;--card:#0d1a0d;--card-border:rgba(16,185,129,0.15);
+  --text:#f1f5f9;--text-dim:#64748b;--green:#10b981;--red:#ef4444;--violet:#8b5cf6}
+html,body{height:100%;width:100%;margin:0;padding:0;overflow:hidden;position:fixed;background:var(--bg)}
+body{display:flex;justify-content:center;align-items:center;font-family:'Exo 2',sans-serif}
+#shell{width:100%;height:100vh;position:relative;overflow-y:auto;overflow-x:hidden;background:var(--bg);scrollbar-width:none}
+#shell::-webkit-scrollbar{display:none}
+.screen{min-height:100vh;padding:24px 18px 40px;display:flex;flex-direction:column;gap:0;position:relative}
+
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.25}
+.orb1{width:350px;height:350px;background:var(--primary-dark);top:-80px;left:-80px;animation:orbFloat1 20s ease-in-out infinite}
+.orb2{width:280px;height:280px;background:var(--cyan);bottom:-60px;right:-60px;animation:orbFloat2 24s ease-in-out infinite}
+.orb3{width:200px;height:200px;background:var(--lime);top:40%;left:60%;animation:orbFloat3 18s ease-in-out infinite}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-60px)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,30px)}}
+
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(16,185,129,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.03) 1px,transparent 1px);
+  background-size:40px 40px}
+
+.content{position:relative;z-index:1;max-width:440px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* BACK BTN */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--card);border:1px solid var(--card-border);
+  padding:8px 16px;border-radius:12px;color:var(--text-dim);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .3s;text-decoration:none;
+  margin-bottom:4px;align-self:flex-start}
+.back-btn:active{border-color:var(--primary);color:var(--primary-light)}
+.back-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* HEADER CARD */
+.header-card{
+  background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.08));
+  border:1px solid var(--card-border);border-radius:16px;padding:14px;
+  display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.header-card::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(16,185,129,0.08),transparent,rgba(34,211,238,0.08),transparent);
+  animation:headerSpin 10s linear infinite}
+@keyframes headerSpin{to{transform:rotate(360deg)}}
+.header-card>*{position:relative;z-index:1}
+.header-logo{width:44px;height:44px;border-radius:12px;overflow:hidden;flex-shrink:0;
+  border:2px solid var(--primary);padding:2px;background:var(--bg)}
+.header-logo img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.header-info{flex:1}
+.header-game{font-family:'Orbitron';font-size:14px;font-weight:700;color:var(--text)}
+.header-mode{display:flex;align-items:center;gap:8px;margin-top:4px}
+.mode-tag{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);
+  padding:3px 10px;border-radius:8px;font-size:9px;color:var(--primary-light);font-weight:600;letter-spacing:1px}
+.time-tag{background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);
+  padding:3px 10px;border-radius:8px;font-size:9px;color:var(--cyan-light);font-weight:600;letter-spacing:1px}
+.status-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+  padding:4px 12px;border-radius:16px;font-size:9px;color:#10b981;font-weight:600}
+.status-dot{width:5px;height:5px;background:#10b981;border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* TIMER CARD */
+.timer-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.timer-label{font-family:'Orbitron';font-size:9px;color:var(--text-dim);letter-spacing:2px;font-weight:600}
+.timer-display{display:flex;align-items:center;gap:5px}
+.timer-box{
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+  width:44px;height:54px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron';font-size:30px;font-weight:900;color:var(--primary-light);
+  border-radius:10px;text-shadow:0 0 15px rgba(16,185,129,0.5)}
+.timer-sep{font-family:'Orbitron';font-size:28px;font-weight:900;color:var(--primary-light)}
+
+/* PERIOD CARD */
+.period-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:12px 14px}
+.period-label{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.period-icon{font-size:12px}
+.period-title{font-family:'Orbitron';font-size:10px;color:var(--text-dim);letter-spacing:1px;font-weight:600}
+.period-value{font-family:'Orbitron';font-size:17px;font-weight:800;color:var(--text);word-break:break-all}
+
+/* RESULT CARD */
+.result-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  position:relative;overflow:hidden}
+.result-card::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(16,185,129,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.03) 1px,transparent 1px);
+  background-size:20px 20px;pointer-events:none}
+.result-label{font-family:'Orbitron';font-size:10px;color:var(--primary-light);letter-spacing:3px;font-weight:700;position:relative;z-index:1}
+.result-ball{
+  width:120px;height:120px;position:relative;display:flex;align-items:center;justify-content:center;z-index:1}
+.result-glow{
+  position:absolute;width:80px;height:80px;
+  background:var(--primary);filter:blur(35px);border-radius:50%;opacity:.3;
+  animation:glowPulse 2s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.4;transform:scale(1.1)}}
+#resultImg{width:100%;height:100%;object-fit:contain;z-index:2;transition:all .4s ease}
+.result-status{font-family:'Orbitron';font-size:14px;font-weight:700;color:var(--green);position:relative;z-index:1}
+
+/* SHUFFLE */
+.shuffle{animation:shuffleAnim .1s linear infinite}
+@keyframes shuffleAnim{0%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.05) rotate(2deg)}50%{transform:scale(.95) rotate(-2deg)}75%{transform:scale(1.05) rotate(1deg)}100%{transform:scale(1) rotate(0deg)}}
+.reveal{animation:revealAnim .5s ease-out}
+@keyframes revealAnim{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* PREDICT BTN */
+.predict-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  font-family:'Orbitron';font-size:13px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;transition:all .3s;position:relative;z-index:1}
+.predict-btn.ready{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;box-shadow:0 4px 20px rgba(16,185,129,0.4)}
+.predict-btn.ready:active{transform:scale(.97)}
+.predict-btn.locked{
+  background:rgba(255,255,255,0.03);color:var(--text-dim);cursor:not-allowed}
+.predict-btn.loading{
+  background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.3);cursor:wait}
+
+/* HISTORY CARD */
+.history-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:12px}
+.history-label{font-family:'Orbitron';font-size:9px;color:var(--primary-light);letter-spacing:2px;font-weight:700;margin-bottom:10px;text-align:center}
+.history-grid{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.history-dot{
+  width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;font-family:'Orbitron';
+  border:1px solid rgba(255,255,255,0.1)}
+.history-dot.bg-green{background:rgba(16,185,129,0.8);border-color:var(--green)}
+.history-dot.bg-red{background:rgba(239,68,68,0.8);border-color:var(--red)}
+.history-dot.bg-violet{background:rgba(139,92,246,0.8);border-color:var(--violet)}
+
+/* INFO BAR */
+.info-bar{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:14px;padding:10px;display:flex;justify-content:center;gap:20px}
+.info-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+.info-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:12px}
+.info-text{font-size:8px;color:var(--text-dim);font-weight:600;letter-spacing:.5px}
+
+/* PARTICLES */
+.ptcl{position:fixed;width:2px;height:2px;background:var(--primary-light);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.6}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* FADE UP */
+.fd{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fd.vis{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="grid-bg"></div>
+<div id="particles"></div>
+
+<div id="shell">
+<div class="screen">
+<div class="content">
+
+<a href="mode.html" class="back-btn">
+  <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  BACK
+</a>
+
+<!-- HEADER -->
+<div class="header-card fd">
+  <div class="header-logo">
+    <img id="headerImg" src="image1.png">
+  </div>
+  <div class="header-info">
+    <div class="header-game" id="headerGameName">-</div>
+    <div class="header-mode">
+      <span class="mode-tag" id="modeTag">BIG/SMALL</span>
+      <span class="time-tag" id="timeTag">30S</span>
+    </div>
+    <div class="status-pill" style="margin-top:6px">
+      <span class="status-dot"></span>
+      AI ENGINE ACTIVE
+    </div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div class="timer-card fd" style="transition-delay:.05s">
+  <div class="timer-label">REAL TIME - NEXT DRAW IN</div>
+  <div class="timer-display">
+    <div class="timer-box" id="t-m1">0</div>
+    <div class="timer-box" id="t-m2">0</div>
+    <div class="timer-sep">:</div>
+    <div class="timer-box" id="t-s1">0</div>
+    <div class="timer-box" id="t-s2">0</div>
+  </div>
+</div>
+
+<!-- PERIOD -->
+<div class="period-card fd" style="transition-delay:.1s">
+  <div class="period-label">
+    <span class="period-icon">&#128202;</span>
+    <span class="period-title">ACTIVE PERIOD</span>
+  </div>
+  <div class="period-value" id="periodDisplay">SYNCING...</div>
+</div>
+
+<!-- RESULT -->
+<div class="result-card fd" style="transition-delay:.15s">
+  <div class="result-label">AI PREDICTION</div>
+  <div class="result-ball">
+    <div class="result-glow"></div>
+    <img id="resultImg" src="https://i.ibb.co/qFcHBGDS/1776870146787.png">
+  </div>
+  <div class="result-status" id="resultStatus">READY</div>
+</div>
+
+<!-- PREDICT BTN -->
+<button class="predict-btn ready fd" style="transition-delay:.2s" id="predictBtn" onclick="handlePredict()">GET PREDICTION</button>
+
+<!-- HISTORY -->
+<div class="history-card fd" style="transition-delay:.25s">
+  <div class="history-label">RECENT RESULTS</div>
+  <div class="history-grid" id="historyGrid"></div>
+</div>
+
+<!-- INFO -->
+<div class="info-bar fd" style="transition-delay:.3s">
+  <div class="info-item">
+    <div class="info-icon">&#128737;&#65039;</div>
+    <div class="info-text">Secure</div>
+  </div>
+  <div class="info-item">
+    <div class="info-icon">&#9889;</div>
+    <div class="info-text">AI Power</div>
+  </div>
+  <div class="info-item">
+    <div class="info-icon">&#128640;</div>
+    <div class="info-text">Fast</div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+// Anti-devtools
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&e.key==='I'))e.preventDefault()});
+
+// Firebase
+const firebaseConfig={apiKey:"AIzaSyCgUHPXpBvpi0cEF2vQ2z8J-c8jI1cj1ko",databaseURL:"https://admin-pannel-de3f4-default-rtdb.firebaseio.com",projectId:"admin-pannel-de3f4"};
+firebase.initializeApp(firebaseConfig);
+
+// Game data
+const games={
+  'okwin':{name:'OKWIN',img:'image1.png'},'51game':{name:'51 GAME',img:'image2.png'},
+  '55club':{name:'55 CLUB',img:'image3.png'},'82lottery':{name:'82 LOTTERY',img:'image4.png'},
+  'dmwin':{name:'DM WIN',img:'image5.png'},'jaiclub':{name:'JAI CLUB',img:'image6.png'},
+  'yaarwin':{name:'YAARWIN',img:'image7.png'},'bdgwin':{name:'BDG WIN',img:'image8.png'},
+  'bigmumbai':{name:'BIG MUMBAI',img:'image9.png'},'tiranga':{name:'TIRANGA',img:'image10.png'},
+  'tashanwin':{name:'TASHAN WIN',img:'image11.png'},'sikkim':{name:'SIKKIM',img:'image12.png'}
+};
+
+const selectedGame=localStorage.getItem('selectedGame')||'okwin';
+const gameData=games[selectedGame]||games['okwin'];
+const selectedTimer=localStorage.getItem('selectedTimer')||'30sec';
+const predictionMode=localStorage.getItem('predictionMode')||'bigsmall';
+const timerType=selectedTimer==='1min'?'1m':'30s';
+const TOTAL_TIME=selectedTimer==='1min'?60:30;
+let currentMode=predictionMode==='number'?'NUMBERS':'BIG/SMALL';
+let clockInterval=null,lastPeriod='',currentPeriod='',hasPredicted=false, historyList=[], lastSeenIssue2='', remainSec=29, timerIv=null;
+
+// Header
+document.getElementById('headerImg').src=gameData.img;
+document.getElementById('headerGameName').innerText=gameData.name;
+document.getElementById('modeTag').innerText=currentMode;
+document.getElementById('timeTag').innerText=timerType==='1m'?'1M':'30S';
+
+// Assets
+const assets={
+  def:"https://i.ibb.co/qFcHBGDS/1776870146787.png",
+  big:"https://i.ibb.co/Pb3P55c/1776870190363.png",
+  small:"https://i.ibb.co/pBcDXRFm/1776870218135.png",
+  nums:[
+    "https://i.ibb.co/whKvd1bL/1776870264510.png","https://i.ibb.co/GfmHk799/1776870297250.png",
+    "https://i.ibb.co/zVrbGJ0H/1776870331500.png","https://i.ibb.co/JFxdJCjb/1776870358256.png",
+    "https://i.ibb.co/Z7N213k/1776870391192.png","https://i.ibb.co/WNDx2qbx/1776870425087.png",
+    "https://i.ibb.co/GQ04Y4Ds/1776870455662.png","https://i.ibb.co/DPP7TJ95/1776870488109.png",
+    "https://i.ibb.co/sdSgFGXj/1776870514631.png","https://i.ibb.co/Xx401f6w/1776870543380.png"
+  ]
+};
+
+// PRELOAD ALL IMAGES
+const preloaded={};
+function preloadAll(){
+  const allUrls=[assets.def,assets.big,assets.small,...assets.nums];
+  allUrls.forEach(url=>{
+    const img=new Image();
+    img.src=url;
+    preloaded[url]=img;
+  });
+}
+preloadAll();
+
+function preloadImage(url){
+  return new Promise(resolve=>{
+    if(preloaded[url]&&preloaded[url].complete){resolve();return}
+    const img=new Image();
+    img.onload=()=>{preloaded[url]=img;resolve()};
+    img.onerror=()=>resolve();
+    img.src=url;
+  });
+}
+
+// DOM
+const ball=document.getElementById('resultImg');
+const btn=document.getElementById('predictBtn');
+const statusText=document.getElementById('resultStatus');
+const periodDisplay=document.getElementById('periodDisplay');
+const historyGrid=document.getElementById('historyGrid');
+let recentNumbers=[];
+
+// History
+function getHistoryColor(n){
+  if([1,3,7,9].includes(n))return'bg-green';
+  if([2,4,6,8].includes(n))return'bg-red';
+  return'bg-violet';
+}
+
+function renderHistory(){
+  historyGrid.innerHTML='';
+  (historyList.length?historyList:recentNumbers.map((n,i)=>({number:n,issue:i}))).slice(0,8).forEach(r=>{
+    const n=typeof r==='object'?r.number:r;
+    const d=document.createElement('div');
+    d.className='history-dot '+getHistoryColor(n);
+    d.textContent=n;
+    historyGrid.appendChild(d);
+  });
+  if(recentNumbers.length===0 && historyList.length===0){
+    for(let i=0;i<8;i++){
+      const n=Math.floor(Math.random()*10);
+      const d=document.createElement('div');
+      d.className='history-dot '+getHistoryColor(n);
+      d.textContent=n;
+      historyGrid.appendChild(d);
+      recentNumbers.push(n);
+    }
+  }
+}
+renderHistory();
+
+// TIMER + SIGNAL - EXACT Turbo predictor logic (history driven, issue reset)
+const DRAW_BASE='https://draw.ar-lottery01.com';
+
+function fullRemain(){return selectedTimer==='1min'?59:29}
+function fmtT(s){s=Math.max(0,Math.floor(s));var m=String(Math.floor(s/60)).padStart(2,'0'),ss=String(s%60).padStart(2,'0');return m+':'+ss}
+function paintT(){var t=fmtT(remainSec);document.getElementById('t-m1').innerText=t[0];document.getElementById('t-m2').innerText=t[1];document.getElementById('t-s1').innerText=t[3];document.getElementById('t-s2').innerText=t[4]}
+
+async function fetchSignal(){
+  const apiPath=selectedTimer==='1min'?'WinGo_1M':'WinGo_30S';
+  try{
+    const res=await fetch(DRAW_BASE+'/WinGo/'+apiPath+'/GetHistoryIssuePage.json?pageSize=10&pageNo=1&t='+Date.now());
+    const data=await res.json();
+    const lst=(data&&data.data&&data.data.list)||[];
+    const parsed=[];
+    for(let i=0;i<Math.min(10,lst.length);i++){
+      const n=parseInt(lst[i].number,10);
+      if(isNaN(n))continue;
+      parsed.push({issue:String(lst[i].issueNumber||''),number:n,color:String(lst[i].color||''),size:n>=5?'Big':'Small'});
+    }
+    if(!parsed.length)return;
+    historyList=parsed;
+    recentNumbers=parsed.map(x=>x.number);
+    renderHistory();
+    const latest=parsed[0];
+    if(latest.issue!==lastSeenIssue2){
+      lastSeenIssue2=latest.issue;
+      lastPeriod=latest.issue; currentPeriod=latest.issue;
+      hasPredicted=false;
+      document.getElementById('periodDisplay').innerText=latest.issue;
+      checkSaved(latest.issue);
+      remainSec=fullRemain();
+      paintT();
+    }
+  }catch(e){}
+}
+
+async function runTimer(){
+  if(clockInterval)clearInterval(clockInterval);
+  if(timerIv)clearInterval(timerIv);
+  remainSec=fullRemain();
+  paintT();
+  await fetchSignal();
+  clockInterval=setInterval(()=>{fetchSignal()},2000);
+  timerIv=setInterval(()=>{
+    if(remainSec>0){remainSec--;paintT()}
+    updateButtons(remainSec);
+    if(remainSec<=3){fetchSignal()}
+  },1000);
+}
+
+function updateButtons(secs){
+  if(!hasPredicted&&secs<=5){
+    btn.className='predict-btn locked';
+    btn.innerText='TOO LATE - WAIT';
+  }else if(hasPredicted){
+    btn.className='predict-btn locked';
+    btn.innerText='WAIT FOR NEXT RESULTS';
+    statusText.innerText='PREDICTION LOCKED';
+  }else if(secs>5){
+    btn.className='predict-btn ready';
+    btn.innerText='GET PREDICTION';
+    statusText.innerText='READY';
+  }
+}
+
+function checkSaved(period){
+  const key='pred_'+selectedGame+'_'+timerType+'_'+currentMode+'_'+period;
+  const saved=localStorage.getItem(key);
+  if(saved){
+    ball.src=saved;
+    ball.classList.add('reveal');
+    setTimeout(()=>ball.classList.remove('reveal'),500);
+    statusText.innerText='PREDICTION READY';
+    btn.className='predict-btn locked';
+    btn.innerText='WAIT FOR NEXT RESULTS';
+    hasPredicted=true;
+  }else{
+    ball.src=assets.def;
+    btn.className='predict-btn ready';
+    btn.innerText='GET PREDICTION';
+    statusText.innerText='READY';
+    hasPredicted=false;
+  }
+}
+
+// Prediction engine — same logic as Panel 4.0 Turbo (tushar predictor.js)
+function digitSize(n){return n>=5?'Big':'Small'}
+function digitColor(n){
+  if(n===0)return'Red,Violet';
+  if(n===5)return'Green,Violet';
+  return n%2?'Green':'Red';
+}
+function predictDigit(nums){
+  const scores={};for(let d=0;d<10;d++)scores[d]=0;
+  for(let i=0;i<Math.min(20,nums.length);i++)scores[nums[i]]+=1.0-i*0.035;
+  const top=Math.max.apply(null,Object.values(scores))||1.0;
+  const cand=[];for(let d2=0;d2<10;d2++)if(scores[d2]>=top-1e-9)cand.push(d2);
+  let best=cand[0];
+  if(cand.length>1){for(let j=0;j<Math.min(20,nums.length);j++){if(cand.indexOf(nums[j])>=0){best=nums[j];break}}}
+  let total=0;for(let k=0;k<10;k++)total+=scores[k];total=total||1.0;
+  let conf=Math.floor(62+(scores[best]/total)*90);
+  let streak=1;
+  for(let s=1;s<nums.length;s++){if(digitSize(nums[s])===digitSize(nums[0]))streak++;else break}
+  if(streak>=3)conf+=4;
+  conf=Math.max(62,Math.min(96,conf));
+  return{digit:best,bigSmall:digitSize(best),color:digitColor(best),conf:conf};
+}
+
+// Predict - ONE click per period
+async function handlePredict(){
+  if(hasPredicted||btn.classList.contains('locked'))return;
+
+  btn.className='predict-btn loading';
+  btn.innerText='PROCESSING...';
+  statusText.innerText='ANALYZING...';
+
+  ball.style.transition='none';
+  ball.classList.add('shuffle');
+
+  const nums=recentNumbers.length?recentNumbers.slice(0,20):Array.from({length:10},()=>Math.floor(Math.random()*10));
+  const p=predictDigit(nums);
+  const pred=currentMode==='BIG/SMALL'
+    ?{type:'bs',result:p.bigSmall,img:p.bigSmall==='BIG'?assets.big:assets.small}
+    :{type:'num',result:p.digit,img:assets.nums[p.digit]};
+
+  // Preload final prediction image
+  await preloadImage(pred.img);
+
+  let elapsed=0;
+  const dur=2000,interval=120;
+
+  const anim=setInterval(()=>{
+    elapsed+=interval;
+    if(elapsed>=dur){
+      clearInterval(anim);
+      ball.classList.remove('shuffle');
+      ball.style.transition='all .4s ease';
+      ball.src=pred.img;
+      ball.classList.add('reveal');
+      setTimeout(()=>ball.classList.remove('reveal'),500);
+
+      const txt=pred.type==='bs'?pred.result:pred.result;
+      statusText.innerText='PREDICTION: '+txt;
+      btn.className='predict-btn locked';
+      btn.innerText='WAIT FOR NEXT RESULTS';
+
+      const period=periodDisplay.innerText;
+      localStorage.setItem('pred_'+selectedGame+'_'+timerType+'_'+currentMode+'_'+period,pred.img);
+
+      hasPredicted=true;
+      if(navigator.vibrate)navigator.vibrate(200);
+    }else{
+      let tmp='';
+      if(currentMode==='BIG/SMALL')tmp=Math.random()>.5?assets.big:assets.small;
+      else tmp=assets.nums[Math.floor(Math.random()*10)];
+      ball.src=tmp;
+    }
+  },interval);
+}
+
+runTimer();
+fetchSignal();
+
+// Particles
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');
+    p.className='ptcl';
+    const s=Math.random()*2.5+1;
+    const d=Math.random()*16+10;
+    const dl=Math.random()*18;
+    const l=Math.random()*100;
+    const dr=(Math.random()-.5)*100;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${l}%;animation:drift ${d}s ${dl}s linear infinite`;
+    p.animate([
+      {opacity:0,transform:`translateY(100vh) translateX(0) scale(0)`},
+      {opacity:.6,offset:.15},{opacity:.6,offset:.85},
+      {opacity:0,transform:`translateY(-10vh) translateX(${dr}px) scale(1)`}
+    ],{duration:d*1000,delay:dl*1000,iterations:Infinity,easing:'linear'});
+    c.appendChild(p);
+  }
+})();
+
+// Fade-up
+(function(){
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fd').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>
