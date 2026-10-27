@@ -293,7 +293,7 @@ const predictionMode=localStorage.getItem('predictionMode')||'bigsmall';
 const timerType=selectedTimer==='1min'?'1m':'30s';
 const TOTAL_TIME=selectedTimer==='1min'?60:30;
 let currentMode=predictionMode==='number'?'NUMBERS':'BIG/SMALL';
-let clockInterval=null,lastPeriod='',currentPeriod='',hasPredicted=false, historyList=[], lastSeenIssue2='', remainSec=29, timerIv=null;
+let clockInterval=null,lastPeriod='',currentPeriod='',hasPredicted=false, historyList=[], lastSeenIssue2='', remainSec=29, timerIv=null, lastPredTxt='';
 
 // Header
 document.getElementById('headerImg').src=gameData.img;
@@ -361,16 +361,6 @@ function renderHistory(){
     d.textContent=n;
     historyGrid.appendChild(d);
   });
-  if(recentNumbers.length===0 && historyList.length===0){
-    for(let i=0;i<8;i++){
-      const n=Math.floor(Math.random()*10);
-      const d=document.createElement('div');
-      d.className='history-dot '+getHistoryColor(n);
-      d.textContent=n;
-      historyGrid.appendChild(d);
-      recentNumbers.push(n);
-    }
-  }
 }
 renderHistory();
 
@@ -431,7 +421,7 @@ function updateButtons(secs){
   }else if(hasPredicted){
     btn.className='predict-btn locked';
     btn.innerText='WAIT FOR NEXT RESULTS';
-    statusText.innerText='PREDICTION LOCKED';
+    statusText.innerText=lastPredTxt?'PREDICTION: '+lastPredTxt:'PREDICTION LOCKED';
   }else if(secs>5){
     btn.className='predict-btn ready';
     btn.innerText='GET PREDICTION';
@@ -446,11 +436,17 @@ function checkSaved(period){
     ball.src=saved;
     ball.classList.add('reveal');
     setTimeout(()=>ball.classList.remove('reveal'),500);
-    statusText.innerText='PREDICTION READY';
+    const ni=assets.nums.indexOf(saved);
+    if(ni>=0)lastPredTxt=String(ni);
+    else if(saved===assets.big)lastPredTxt='BIG';
+    else if(saved===assets.small)lastPredTxt='SMALL';
+    else lastPredTxt='';
+    statusText.innerText=lastPredTxt?'PREDICTION: '+lastPredTxt:'PREDICTION READY';
     btn.className='predict-btn locked';
     btn.innerText='WAIT FOR NEXT RESULTS';
     hasPredicted=true;
   }else{
+    lastPredTxt='';
     ball.src=assets.def;
     btn.className='predict-btn ready';
     btn.innerText='GET PREDICTION';
@@ -486,6 +482,9 @@ function predictDigit(nums){
 async function handlePredict(){
   if(hasPredicted||btn.classList.contains('locked'))return;
 
+  const lat=historyList.length?historyList[0]:(recentNumbers.length?{number:recentNumbers[0],size:recentNumbers[0]>=5?'big':'small'}:null);
+  if(!lat)return;
+
   btn.className='predict-btn loading';
   btn.innerText='PROCESSING...';
   statusText.innerText='ANALYZING...';
@@ -493,11 +492,13 @@ async function handlePredict(){
   ball.style.transition='none';
   ball.classList.add('shuffle');
 
-  const nums=recentNumbers.length?recentNumbers.slice(0,20):Array.from({length:10},()=>Math.floor(Math.random()*10));
-  const p=predictDigit(nums);
+  const nums=recentNumbers.length?recentNumbers.slice(0,20):[lat.number];
+  predictDigit(nums);
+
+  // Turbo exact: prediction = latest result (tushar startPredict -> paintSignal uses lat)
   const pred=currentMode==='BIG/SMALL'
-    ?{type:'bs',result:p.bigSmall,img:p.bigSmall==='BIG'?assets.big:assets.small}
-    :{type:'num',result:p.digit,img:assets.nums[p.digit]};
+    ?{type:'bs',result:String(lat.size).toUpperCase(),img:String(lat.size).toLowerCase()==='big'?assets.big:assets.small}
+    :{type:'num',result:String(lat.number),img:assets.nums[lat.number]};
 
   // Preload final prediction image
   await preloadImage(pred.img);
@@ -515,8 +516,8 @@ async function handlePredict(){
       ball.classList.add('reveal');
       setTimeout(()=>ball.classList.remove('reveal'),500);
 
-      const txt=pred.type==='bs'?pred.result:pred.result;
-      statusText.innerText='PREDICTION: '+txt;
+      statusText.innerText='PREDICTION: '+pred.result;
+      lastPredTxt=pred.result;
       btn.className='predict-btn locked';
       btn.innerText='WAIT FOR NEXT RESULTS';
 
