@@ -141,14 +141,30 @@ body{display:flex;justify-content:center;align-items:center;font-family:'Exo 2',
   background:var(--card);border:1px solid var(--card-border);
   border-radius:14px;padding:12px}
 .history-label{font-family:'Orbitron';font-size:9px;color:var(--primary-light);letter-spacing:2px;font-weight:700;margin-bottom:10px;text-align:center}
-.history-grid{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.history-grid{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .history-dot{
-  width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:#fff;font-family:'Orbitron';
-  border:1px solid rgba(255,255,255,0.1)}
+  width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:700;color:#fff;font-family:'Orbitron';
+  border:1px solid rgba(255,255,255,0.25);
+  box-shadow:0 6px 14px -8px rgba(0,0,0,.8),inset 0 -3px 8px rgba(0,0,0,.22)}
 .history-dot.bg-green{background:rgba(16,185,129,0.8);border-color:var(--green)}
 .history-dot.bg-red{background:rgba(239,68,68,0.8);border-color:var(--red)}
 .history-dot.bg-violet{background:rgba(139,92,246,0.8);border-color:var(--violet)}
+
+/* RECORDS TABLE (same as turbo) */
+.rec-table{border:1px solid var(--card-border);border-radius:10px;overflow:hidden}
+.rec-tr{
+  display:grid;grid-template-columns:1.5fr .7fr .7fr .6fr;align-items:center;gap:4px;
+  padding:8px 8px;font-family:'Orbitron'}
+.rec-th{background:rgba(255,255,255,.06);font-size:8px;letter-spacing:1px;color:var(--text-dim)}
+.rec-td{background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);font-size:9px;color:#fff;font-weight:700}
+.rec-td:nth-child(even){background:rgba(16,185,129,.05)}
+.rec-td .t-num{font-weight:900;color:#6ef7a5;text-align:center}
+.rec-td .t-size{
+  justify-self:center;font-size:8px;letter-spacing:.5px;padding:2px 7px;border-radius:999px}
+.rec-td .t-size.big{color:#ff8a80;background:rgba(255,82,82,.16);border:1px solid rgba(255,82,82,.4)}
+.rec-td .t-size.small{color:#6ef7a5;background:rgba(74,222,128,.14);border:1px solid rgba(74,222,128,.4)}
+.rec-td .t-col{justify-self:center;width:12px;height:12px;border-radius:50%;box-shadow:0 0 8px currentColor}
 
 /* INFO BAR */
 .info-bar{
@@ -245,6 +261,15 @@ body{display:flex;justify-content:center;align-items:center;font-family:'Exo 2',
 <div class="history-card fd" style="transition-delay:.25s">
   <div class="history-label">RECENT RESULTS</div>
   <div class="history-grid" id="historyGrid"></div>
+</div>
+
+<!-- RECORDS (turbo style) -->
+<div class="history-card fd" style="transition-delay:.27s">
+  <div class="history-label">RECORDS</div>
+  <div class="rec-table">
+    <div class="rec-tr rec-th"><span>PERIOD</span><span>NUMBER</span><span>SIZE</span><span>COLOR</span></div>
+    <div id="recordsBody"></div>
+  </div>
 </div>
 
 <!-- INFO -->
@@ -354,15 +379,36 @@ function getHistoryColor(n){
 
 function renderHistory(){
   historyGrid.innerHTML='';
-  (historyList.length?historyList:recentNumbers.map((n,i)=>({number:n,issue:i}))).slice(0,8).forEach(r=>{
-    const n=typeof r==='object'?r.number:r;
+  historyList.slice(0,5).forEach(r=>{
     const d=document.createElement('div');
-    d.className='history-dot '+getHistoryColor(n);
-    d.textContent=n;
+    d.className='history-dot '+getHistoryColor(r.number);
+    d.textContent=r.number;
     historyGrid.appendChild(d);
   });
 }
+
+// RECORDS - same as turbo paintRecords (results.slice(1,9))
+const COLOR_HEX={green:'#22c55e',red:'#ef4444',violet:'#a855f7'};
+function colorDot(color){
+  color=String(color||'');
+  if(color.indexOf('violet')>=0)return '#a855f7';
+  return COLOR_HEX[color.split(',')[0]]||'#9aa4b2';
+}
+function renderRecords(){
+  const body=document.getElementById('recordsBody');
+  body.innerHTML='';
+  historyList.slice(1,9).forEach(r=>{
+    const row=document.createElement('div');
+    row.className='rec-tr rec-td';
+    row.innerHTML='<span>'+r.issue+'</span>'+
+      '<span class="t-num">'+r.number+'</span>'+
+      '<span class="t-size '+(r.size==='Big'?'big':'small')+'">'+r.size.toUpperCase()+'</span>'+
+      '<span class="t-col" style="background:'+colorDot(r.color)+';color:'+colorDot(r.color)+'"></span>';
+    body.appendChild(row);
+  });
+}
 renderHistory();
+renderRecords();
 
 // TIMER + SIGNAL - EXACT Turbo predictor logic (history driven, issue reset)
 const DRAW_BASE='https://draw.ar-lottery01.com';
@@ -387,6 +433,7 @@ async function fetchSignal(){
     historyList=parsed;
     recentNumbers=parsed.map(x=>x.number);
     renderHistory();
+    renderRecords();
     const latest=parsed[0];
     if(latest.issue!==lastSeenIssue2){
       lastSeenIssue2=latest.issue;
