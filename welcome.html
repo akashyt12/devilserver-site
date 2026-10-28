@@ -19,7 +19,7 @@
 html{scroll-behavior:smooth}
 body{
   font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  height:100vh;height:100dvh;overflow:hidden;-webkit-font-smoothing:antialiased;
 }
 
 /* ===== BACKGROUND ===== */
@@ -41,27 +41,25 @@ body::before{
 @keyframes au3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,40px)}}
 .ptcl{position:fixed;width:2px;height:2px;background:var(--g1);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
 
-/* ===== SHELL ===== */
+/* ===== SHELL (viewport fit) ===== */
 .shell{
-  position:relative;z-index:10;max-width:520px;margin:0 auto;
-  min-height:100vh;display:flex;flex-direction:column;padding:18px 18px 26px;
+  position:relative;z-index:10;max-width:1060px;margin:0 auto;height:100%;
+  display:flex;flex-direction:column;padding:14px 20px 12px;
 }
-
-/* entrance */
-.fd{opacity:0;transform:translateY(26px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+.fd{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
 .fd.vis{opacity:1;transform:translateY(0)}
 
 /* ===== TOPBAR ===== */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{
-  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--g1),var(--pink) 55%,var(--violet));
   box-shadow:0 6px 18px rgba(255,59,92,.4);position:relative;
 }
-.brand-mark svg{width:17px;height:17px;color:#fff}
+.brand-mark svg{width:16px;height:16px;color:#fff}
 .brand-mark::after{
-  content:'';position:absolute;inset:-3px;border-radius:13px;padding:1.5px;
+  content:'';position:absolute;inset:-3px;border-radius:12px;padding:1.5px;
   background:conic-gradient(from 0deg,var(--violet),transparent 40%,var(--g1) 65%,transparent 85%,var(--violet));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
@@ -78,62 +76,59 @@ body::before{
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:blink 1.6s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* ===== HERO ===== */
-.hero{text-align:center;padding:26px 0 6px;position:relative}
+/* ===== MID: 2 columns ===== */
+.mid{flex:1;display:grid;grid-template-columns:1fr 1.05fr;gap:26px;align-items:center;min-height:0;padding:6px 0}
+
+/* LEFT: hero */
+.hero{text-align:center;position:relative}
 .hero-glow{
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:320px;height:320px;border-radius:50%;
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  width:300px;height:300px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,59,92,.22),transparent 65%);
   filter:blur(30px);pointer-events:none;
 }
-.emblem{position:relative;width:150px;height:150px;margin:0 auto 22px;animation:float 5.5s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.emblem{position:relative;width:132px;height:132px;margin:0 auto 14px;animation:float 5.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .orbit{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(255,59,92,.3);animation:spin 14s linear infinite}
 .orbit::after{
   content:'';position:absolute;top:-5px;left:50%;width:10px;height:10px;border-radius:50%;
   background:var(--violet);box-shadow:0 0 12px var(--violet);
 }
-.orbit-2{inset:-16px;border-style:solid;border-color:rgba(139,92,246,.18);animation:spin 22s linear reverse infinite}
+.orbit-2{inset:-14px;border-style:solid;border-color:rgba(139,92,246,.18);animation:spin 22s linear reverse infinite}
 .orbit-2::after{background:var(--g1);box-shadow:0 0 12px var(--g1)}
 .emblem-core{
-  position:absolute;inset:26px;border-radius:50%;
+  position:absolute;inset:23px;border-radius:50%;
   background:linear-gradient(140deg,var(--g1),var(--pink) 55%,var(--violet));
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 14px 44px rgba(255,59,92,.5),0 0 40px rgba(139,92,246,.35),inset 0 0 24px rgba(255,255,255,.18);
 }
-.emblem-core::before{
-  content:'';position:absolute;inset:5px;border-radius:50%;
-  border:1.5px solid rgba(255,255,255,.35);
-}
-.emblem-core svg{width:44px;height:44px;color:#fff;filter:drop-shadow(0 3px 10px rgba(0,0,0,.35))}
+.emblem-core::before{content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35)}
+.emblem-core svg{width:38px;height:38px;color:#fff;filter:drop-shadow(0 3px 10px rgba(0,0,0,.35))}
 
 .h-title{font-family:'Orbitron';line-height:.95;letter-spacing:5px;position:relative}
-.h-devil{font-size:46px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,59,92,.4)}
+.h-devil{font-size:42px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,59,92,.4)}
 .h-pred{
-  font-size:46px;font-weight:900;
+  font-size:42px;font-weight:900;
   background:linear-gradient(135deg,var(--g1),var(--pink),var(--violet),var(--g1));
   background-size:300% 100%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   animation:flow 6s linear infinite;
 }
 @keyframes flow{0%{background-position:0 0}100%{background-position:300% 0}}
-.h-sub{
-  font-family:'Orbitron';font-size:9px;font-weight:600;color:var(--muted);
-  letter-spacing:6px;margin-top:14px;text-transform:uppercase;
-}
+.h-sub{font-family:'Orbitron';font-size:9px;font-weight:600;color:var(--muted);letter-spacing:5.5px;margin-top:11px;text-transform:uppercase}
 .h-ver{
-  display:inline-flex;align-items:center;gap:8px;margin-top:14px;
-  padding:6px 16px;border-radius:100px;
+  display:inline-flex;align-items:center;gap:8px;margin-top:11px;
+  padding:6px 15px;border-radius:100px;
   background:linear-gradient(135deg,rgba(255,59,92,.14),rgba(139,92,246,.14));
   border:1px solid rgba(255,59,92,.25);
   font-family:'Orbitron';font-size:9px;font-weight:700;color:var(--g2);letter-spacing:2.5px;
 }
 .h-ver i{width:5px;height:5px;border-radius:50%;background:var(--g1);box-shadow:0 0 8px var(--g1)}
 
-/* ===== PILLS ===== */
-.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+/* PILLS */
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;position:relative}
 .pill{
-  display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;
+  display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:100px;
   background:var(--card);border:1px solid var(--border);backdrop-filter:blur(14px);
   font-family:'Orbitron';font-size:8.5px;font-weight:700;letter-spacing:1.6px;color:var(--dim);
   transition:all .3s ease;
@@ -142,39 +137,34 @@ body::before{
 .pill svg{width:13px;height:13px;color:var(--g1)}
 .pill b{color:#fff;font-weight:800}
 
-/* ===== BENTO ===== */
-.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+/* RIGHT: bento + steps */
+.right{display:flex;flex-direction:column;gap:12px;min-height:0}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .b-card{
-  position:relative;border-radius:18px;padding:16px 15px;
+  position:relative;border-radius:16px;padding:13px 14px;
   background:var(--card);border:1px solid var(--border);backdrop-filter:blur(16px);
   overflow:hidden;transition:all .35s ease;
 }
 .b-card:hover{transform:translateY(-4px);border-color:rgba(255,59,92,.32);box-shadow:0 14px 34px rgba(255,59,92,.1)}
 .b-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--g1),var(--violet),transparent);
-  opacity:.7;
+  background:linear-gradient(90deg,transparent,var(--g1),var(--violet),transparent);opacity:.7;
 }
 .b-wide{grid-column:1/-1}
 .b-ico{
-  width:38px;height:38px;border-radius:11px;margin-bottom:11px;
+  width:34px;height:34px;border-radius:10px;margin-bottom:9px;
   background:linear-gradient(135deg,rgba(255,59,92,.16),rgba(139,92,246,.16));
   border:1px solid rgba(255,59,92,.22);
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.b-ico svg{width:19px;height:19px;color:var(--g1)}
-.b-title{font-family:'Orbitron';font-size:11px;font-weight:800;letter-spacing:2px;color:#fff;margin-bottom:5px}
-.b-desc{font-size:11.5px;line-height:1.45;color:var(--muted);font-weight:500}
-
-/* live bars in wide card */
-.b-live{display:flex;align-items:center;gap:14px}
-.b-live .b-ico{margin-bottom:0;flex-shrink:0}
-.bars{display:flex;align-items:flex-end;gap:4px;height:34px;flex:1}
-.bars i{
-  flex:1;border-radius:3px 3px 0 0;
-  background:linear-gradient(to top,var(--g3),var(--g1));
-  animation:bar 1.4s ease-in-out infinite alternate;min-height:5px;
-}
+.b-ico svg{width:17px;height:17px;color:var(--g1)}
+.b-title{font-family:'Orbitron';font-size:10.5px;font-weight:800;letter-spacing:2px;color:#fff;margin-bottom:4px}
+.b-desc{font-size:11px;line-height:1.4;color:var(--muted);font-weight:500}
+.b-live{display:flex;align-items:center;gap:13px}
+.b-live .b-ico{margin-bottom:0}
+.b-live-txt{flex:1;min-width:0}
+.bars{display:flex;align-items:flex-end;gap:4px;height:32px;width:110px;flex-shrink:0}
+.bars i{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(to top,var(--g3),var(--g1));animation:bar 1.4s ease-in-out infinite alternate;min-height:5px}
 .bars i:nth-child(2){animation-delay:.15s;background:linear-gradient(to top,var(--g3),var(--pink))}
 .bars i:nth-child(3){animation-delay:.3s}
 .bars i:nth-child(4){animation-delay:.45s;background:linear-gradient(to top,var(--violet),var(--pink))}
@@ -183,32 +173,33 @@ body::before{
 .bars i:nth-child(7){animation-delay:.9s}
 @keyframes bar{0%{height:18%}100%{height:100%}}
 
-/* ===== STEPS ===== */
-.steps{margin-top:22px;padding:16px 15px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(16px)}
-.steps-h{font-family:'Orbitron';font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* STEPS */
+.steps{padding:13px 14px;border-radius:16px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(16px)}
+.steps-h{font-family:'Orbitron';font-size:8.5px;font-weight:700;letter-spacing:3px;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:8px}
 .steps-h::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,59,92,.35),transparent)}
-.step{display:flex;gap:13px;align-items:flex-start;position:relative;padding-bottom:15px}
+.step{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:11px}
 .step:last-child{padding-bottom:0}
 .step:not(:last-child)::before{
-  content:'';position:absolute;left:14px;top:32px;bottom:2px;width:1px;
+  content:'';position:absolute;left:13px;top:30px;bottom:1px;width:1px;
   background:linear-gradient(to bottom,rgba(255,59,92,.4),rgba(139,92,246,.15));
 }
 .step-n{
-  width:29px;height:29px;border-radius:9px;flex-shrink:0;
+  width:27px;height:27px;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,rgba(255,59,92,.18),rgba(139,92,246,.18));
   border:1px solid rgba(255,59,92,.3);
-  font-family:'Orbitron';font-size:10px;font-weight:800;color:var(--g2);
+  font-family:'Orbitron';font-size:9.5px;font-weight:800;color:var(--g2);
 }
-.step-t{font-family:'Orbitron';font-size:10.5px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:3px;padding-top:3px}
-.step-d{font-size:11.5px;color:var(--muted);line-height:1.45;font-weight:500}
+.step-t{font-family:'Orbitron';font-size:10px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:2px;padding-top:4px}
+.step-d{font-size:11px;color:var(--muted);line-height:1.4;font-weight:500}
 
 /* ===== CTA ===== */
-.cta{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.cta{flex-shrink:0;display:flex;gap:10px;margin-top:4px}
 .btn{
-  height:54px;border-radius:15px;font-family:'Orbitron';font-size:12.5px;font-weight:800;
+  height:50px;border-radius:14px;font-family:'Orbitron';font-size:12px;font-weight:800;
   letter-spacing:2.5px;cursor:pointer;border:none;display:flex;align-items:center;
   justify-content:center;gap:11px;transition:all .3s ease;text-decoration:none;text-transform:uppercase;
+  flex:1;
 }
 .btn:active{transform:scale(.97)}
 .btn-p{
@@ -224,25 +215,60 @@ body::before{
 @keyframes shine{0%{left:-80%}55%,100%{left:130%}}
 .btn-p:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(255,59,92,.6),0 0 30px rgba(139,92,246,.4)}
 .btn-p svg{width:18px;height:18px}
-.btn-g{
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,59,92,.22);color:var(--g2);
-}
+.btn-g{background:rgba(255,255,255,.03);border:1px solid rgba(255,59,92,.22);color:var(--g2)}
 .btn-g:hover{background:rgba(255,59,92,.09);transform:translateY(-2px)}
 .btn-g svg{width:17px;height:17px}
 
 /* ===== FOOTER ===== */
-.foot{margin-top:auto;padding-top:24px;text-align:center}
+.foot{flex-shrink:0;padding-top:10px;text-align:center;display:flex;align-items:center;justify-content:center;gap:14px}
 .foot-txt{font-family:'Orbitron';font-size:7.5px;font-weight:600;color:#7a3346;letter-spacing:4px;text-transform:uppercase}
-.foot-note{font-size:10px;color:#5e2a3a;margin-top:7px;letter-spacing:.5px}
+.foot-note{font-size:10px;color:#5e2a3a;letter-spacing:.5px}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:430px){
-  .h-devil,.h-pred{font-size:38px;letter-spacing:3px}
-  .emblem{width:132px;height:132px}
-  .emblem-core{inset:23px}
-  .emblem-core svg{width:38px;height:38px}
-  .b-desc,.step-d{font-size:11px}
-  .btn{height:50px;font-size:11.5px}
+/* ===== MOBILE: single column compact ===== */
+@media(max-width:900px){
+  .shell{padding:12px 16px 12px;max-width:560px}
+  .mid{grid-template-columns:1fr;gap:14px;align-items:start;overflow:hidden;padding:4px 0}
+  .emblem{width:96px;height:96px;margin-bottom:10px}
+  .emblem-core{inset:17px}
+  .emblem-core svg{width:28px;height:28px}
+  .h-devil,.h-pred{font-size:33px;letter-spacing:3px}
+  .h-sub{margin-top:8px;letter-spacing:4px;font-size:8px}
+  .h-ver{margin-top:8px;padding:5px 13px;font-size:8px}
+  .pills{margin-top:12px}
+  .pill{padding:6px 10px;font-size:7.5px;letter-spacing:1.2px}
+  .hero-glow{width:220px;height:220px}
+  .right{gap:9px}
+  .b-desc{display:none}
+  .b-card{padding:11px 12px}
+  .b-wide .b-desc{display:block;font-size:10.5px}
+  .b-ico{width:30px;height:30px;margin-bottom:7px}
+  .b-title{font-size:9.5px;margin-bottom:0}
+  .b-live .b-title{margin-bottom:3px}
+  .bars{height:26px;width:88px}
+  .steps{padding:11px 12px}
+  .steps-h{margin-bottom:8px}
+  .step{padding-bottom:8px;gap:10px}
+  .step-d{font-size:10.5px}
+  .step-t{font-size:9.5px}
+  .step:not(:last-child)::before{top:27px}
+  .btn{height:46px;font-size:11px;letter-spacing:2px}
+  .cta{flex-direction:column;gap:8px}
+  .foot{padding-top:8px;flex-direction:column;gap:3px}
+}
+@media(max-width:900px) and (max-height:740px){
+  .emblem{width:78px;height:78px}
+  .emblem-core{inset:14px}
+  .emblem-core svg{width:24px;height:24px}
+  .h-devil,.h-pred{font-size:28px}
+  .b-wide .b-desc{display:none}
+  .step-d{display:none}
+  .step-t{padding-top:6px}
+  .h-sub{display:none}
+}
+/* short screens: allow scroll as safety (content reachable) */
+@media(max-height:700px){
+  body{overflow:auto;height:auto;min-height:100vh}
+  .shell{height:auto;min-height:100vh}
 }
 </style>
 </head>
@@ -266,107 +292,111 @@ body::before{
   <div class="live-chip"><span class="live-dot"></span>AI ENGINE ONLINE</div>
 </header>
 
-<!-- HERO -->
-<section class="hero fd" style="transition-delay:.08s">
-  <div class="hero-glow"></div>
+<!-- MID -->
+<div class="mid">
 
-  <div class="emblem">
-    <div class="orbit"></div>
-    <div class="orbit orbit-2"></div>
-    <div class="emblem-core">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    </div>
-  </div>
+  <!-- LEFT: hero -->
+  <section class="hero fd" style="transition-delay:.08s">
+    <div class="hero-glow"></div>
 
-  <h1 class="h-title">
-    <div class="h-devil">DEVIL</div>
-    <div class="h-pred">PREDICTOR</div>
-  </h1>
-  <div class="h-sub">Quantum Prediction Engine</div>
-  <div class="h-ver"><i></i>V4.0 PRO BUILD</div>
-</section>
-
-<!-- PILLS -->
-<div class="pills fd" style="transition-delay:.16s">
-  <div class="pill">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    <b>99%</b> ACCURACY
-  </div>
-  <div class="pill">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    24/7 LIVE
-  </div>
-  <div class="pill">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    REAL-TIME
-  </div>
-</div>
-
-<!-- BENTO FEATURES -->
-<div class="bento fd" style="transition-delay:.24s">
-
-  <div class="b-card b-wide">
-    <div class="b-live">
-      <div class="b-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <div class="emblem">
+      <div class="orbit"></div>
+      <div class="orbit orbit-2"></div>
+      <div class="emblem-core">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       </div>
-      <div style="flex:1">
-        <div class="b-title">LIVE SIGNAL FEED</div>
-        <div class="b-desc">Real-time draw sync &amp; instant prediction lock every round.</div>
+    </div>
+
+    <h1 class="h-title">
+      <div class="h-devil">DEVIL</div>
+      <div class="h-pred">PREDICTOR</div>
+    </h1>
+    <div class="h-sub">Quantum Prediction Engine</div>
+    <div class="h-ver"><i></i>V4.0 PRO BUILD</div>
+
+    <div class="pills">
+      <div class="pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <b>99%</b> ACCURACY
       </div>
-      <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        24/7 LIVE
+      </div>
+      <div class="pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        REAL-TIME
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="b-card">
-    <div class="b-ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  <!-- RIGHT: features -->
+  <div class="right">
+
+    <div class="bento fd" style="transition-delay:.16s">
+      <div class="b-card b-wide">
+        <div class="b-live">
+          <div class="b-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="b-live-txt">
+            <div class="b-title">LIVE SIGNAL FEED</div>
+            <div class="b-desc">Real-time draw sync &amp; instant prediction lock every round.</div>
+          </div>
+          <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <div class="b-card">
+        <div class="b-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="b-title">SECURE</div>
+        <div class="b-desc">Device-locked access with encrypted sessions.</div>
+      </div>
+
+      <div class="b-card">
+        <div class="b-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg>
+        </div>
+        <div class="b-title">QUANTUM AI</div>
+        <div class="b-desc">Neural pattern engine with deep analysis.</div>
+      </div>
     </div>
-    <div class="b-title">SECURE</div>
-    <div class="b-desc">Device-locked access with encrypted sessions.</div>
-  </div>
 
-  <div class="b-card">
-    <div class="b-ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg>
+    <div class="steps fd" style="transition-delay:.24s">
+      <div class="steps-h">HOW IT WORKS</div>
+
+      <div class="step">
+        <div class="step-n">01</div>
+        <div>
+          <div class="step-t">CREATE ACCOUNT</div>
+          <div class="step-d">Login with your key &amp; activate the engine.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-n">02</div>
+        <div>
+          <div class="step-t">SET YOUR TARGET</div>
+          <div class="step-d">Choose mode &amp; target — AI calibrates instantly.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-n">03</div>
+        <div>
+          <div class="step-t">GET PREDICTIONS</div>
+          <div class="step-d">Lock the signal each round &amp; track progress.</div>
+        </div>
+      </div>
     </div>
-    <div class="b-title">QUANTUM AI</div>
-    <div class="b-desc">Neural pattern engine with deep analysis.</div>
-  </div>
 
-</div>
-
-<!-- STEPS -->
-<div class="steps fd" style="transition-delay:.32s">
-  <div class="steps-h">HOW IT WORKS</div>
-
-  <div class="step">
-    <div class="step-n">01</div>
-    <div>
-      <div class="step-t">CREATE ACCOUNT</div>
-      <div class="step-d">Login with your key &amp; activate the engine.</div>
-    </div>
-  </div>
-
-  <div class="step">
-    <div class="step-n">02</div>
-    <div>
-      <div class="step-t">SET YOUR TARGET</div>
-      <div class="step-d">Choose mode &amp; target goal — AI calibrates instantly.</div>
-    </div>
-  </div>
-
-  <div class="step">
-    <div class="step-n">03</div>
-    <div>
-      <div class="step-t">GET PREDICTIONS</div>
-      <div class="step-d">Lock the signal each round &amp; track your progress.</div>
-    </div>
   </div>
 </div>
 
 <!-- CTA -->
-<div class="cta fd" style="transition-delay:.4s">
+<div class="cta fd" style="transition-delay:.32s">
   <a href="login.html" class="btn btn-p">
     GET STARTED
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -378,7 +408,7 @@ body::before{
 </div>
 
 <!-- FOOTER -->
-<div class="foot fd" style="transition-delay:.48s">
+<div class="foot fd" style="transition-delay:.4s">
   <div class="foot-txt">SECURE &bull; QUANTUM &bull; REAL-TIME</div>
   <div class="foot-note">v4.0 &mdash; Play smart. Stay in control.</div>
 </div>
