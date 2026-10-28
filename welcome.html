@@ -12,8 +12,9 @@
 :root{
   --g1:#ff3b5c;--g2:#ff7a94;--g3:#c41e42;--g4:#ff9fb4;
   --violet:#8b5cf6;--pink:#ff2d78;
-  --bg:#0a0509;--card:rgba(255,59,92,.04);--border:rgba(255,59,92,.12);
+  --bg:#0a0509;--card:rgba(255,255,255,.035);--border:rgba(255,59,92,.14);
   --text:#fff5f7;--dim:#ff8fa3;--muted:#a86a7c;
+  --ok:#22c55e;
 }
 html{scroll-behavior:smooth}
 body{
@@ -21,274 +22,365 @@ body{
   min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
 }
 
-/* BG EFFECTS */
+/* ===== BACKGROUND ===== */
 body::before{
   content:'';position:fixed;inset:0;
   background:
-    linear-gradient(rgba(255,59,92,.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,59,92,.03) 1px,transparent 1px);
-  background-size:50px 50px;z-index:0;pointer-events:none;
+    linear-gradient(rgba(255,59,92,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,59,92,.035) 1px,transparent 1px);
+  background-size:44px 44px;z-index:0;pointer-events:none;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 30%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 30%,#000 30%,transparent 100%);
 }
-.orb{position:fixed;border-radius:50%;filter:blur(100px);z-index:0;pointer-events:none;opacity:.3}
-.orb-a{width:500px;height:500px;background:rgba(255,59,92,.35);top:-150px;left:-120px;animation:ob1 16s ease-in-out infinite}
-.orb-b{width:400px;height:400px;background:rgba(139,92,246,.3);bottom:-120px;right:-80px;animation:ob2 20s ease-in-out infinite}
-.orb-c{width:280px;height:280px;background:rgba(255,45,120,.2);top:45%;left:55%;animation:ob3 14s ease-in-out infinite}
-@keyframes ob1{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,50px)}}
-@keyframes ob2{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-70px)}}
-@keyframes ob3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
-
-/* PARTICLES */
+.aur{position:fixed;border-radius:50%;filter:blur(110px);z-index:0;pointer-events:none}
+.aur-1{width:480px;height:480px;background:rgba(255,59,92,.32);top:-160px;left:-140px;animation:au1 18s ease-in-out infinite}
+.aur-2{width:420px;height:420px;background:rgba(139,92,246,.3);bottom:-140px;right:-120px;animation:au2 22s ease-in-out infinite}
+.aur-3{width:260px;height:260px;background:rgba(255,45,120,.22);top:42%;left:60%;animation:au3 15s ease-in-out infinite}
+@keyframes au1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,50px)}}
+@keyframes au2{0%,100%{transform:translate(0,0)}50%{transform:translate(-55px,-60px)}}
+@keyframes au3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,40px)}}
 .ptcl{position:fixed;width:2px;height:2px;background:var(--g1);border-radius:50%;pointer-events:none;z-index:1;opacity:0}
-@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.7}90%{opacity:.7}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
 
-/* PAGE */
-.page{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px}
+/* ===== SHELL ===== */
+.shell{
+  position:relative;z-index:10;max-width:520px;margin:0 auto;
+  min-height:100vh;display:flex;flex-direction:column;padding:18px 18px 26px;
+}
 
-/* FADE */
-.fd{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+/* entrance */
+.fd{opacity:0;transform:translateY(26px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
 .fd.vis{opacity:1;transform:translateY(0)}
 
-/* STATUS */
-.sts{
-  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
-  display:flex;align-items:center;gap:8px;
-  padding:8px 20px;border-radius:100px;
-  background:rgba(6,13,6,.7);backdrop-filter:blur(20px);
-  border:1px solid var(--border);
-  font-family:'Orbitron';font-size:9px;font-weight:600;letter-spacing:3px;color:var(--dim);text-transform:uppercase;
+/* ===== TOPBAR ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--g1),var(--pink) 55%,var(--violet));
+  box-shadow:0 6px 18px rgba(255,59,92,.4);position:relative;
 }
-.sts-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);box-shadow:0 0 10px var(--g1);animation:blink 2s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* LOGO */
-.logo-sec{margin-top:60px;margin-bottom:12px;position:relative}
-.logo-float{animation:logoF 5s ease-in-out infinite;transform-style:preserve-3d}
-@keyframes logoF{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.logo-rings{position:absolute;inset:-30px;pointer-events:none}
-.ring{position:absolute;inset:0;border:1px solid rgba(255,59,92,.15);border-radius:50%;animation:ringP 3s ease-in-out infinite}
-.ring:nth-child(2){inset:-20px;animation-delay:.7s;opacity:.5}
-@keyframes ringP{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.08);opacity:.6}}
-.logo-box{
-  width:110px;height:110px;border-radius:22px;
-  background:rgba(255,59,92,.05);border:1px solid var(--border);
-  backdrop-filter:blur(30px);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 80px rgba(255,59,92,.12),0 0 160px rgba(139,92,246,.06);position:relative;z-index:2;
-}
-/* rotating conic neon border */
-.logo-box::after{
-  content:'';position:absolute;inset:-3px;border-radius:25px;padding:2px;
-  background:conic-gradient(from 0deg,var(--violet),transparent 35%,var(--g1) 55%,transparent 80%,var(--violet));
+.brand-mark svg{width:17px;height:17px;color:#fff}
+.brand-mark::after{
+  content:'';position:absolute;inset:-3px;border-radius:13px;padding:1.5px;
+  background:conic-gradient(from 0deg,var(--violet),transparent 40%,var(--g1) 65%,transparent 85%,var(--violet));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  mask-composite:exclude;
-  animation:ringSpin 4s linear infinite;pointer-events:none;
+  mask-composite:exclude;animation:spin 4s linear infinite;
 }
-@keyframes ringSpin{to{transform:rotate(360deg)}}
-.logo-core{
-  width:64px;height:64px;border-radius:16px;
-  background:linear-gradient(135deg,var(--g1),var(--pink) 60%,var(--violet));
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 32px rgba(255,59,92,.4),0 0 24px rgba(139,92,246,.3);
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand-name{font-family:'Orbitron';font-size:14px;font-weight:800;letter-spacing:4px}
+.brand-name span{color:var(--g1)}
+.live-chip{
+  display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;
+  background:rgba(255,59,92,.07);border:1px solid var(--border);
+  font-family:'Orbitron';font-size:8px;font-weight:700;letter-spacing:2.5px;color:var(--dim);
 }
-.logo-core svg{width:32px;height:32px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* TITLE */
-.title-sec{text-align:center;margin-bottom:16px}
-.t-devil{font-family:'Orbitron';font-size:40px;font-weight:900;color:#fff;letter-spacing:4px;line-height:1}
-.t-pred{
-  font-family:'Orbitron';font-size:40px;font-weight:900;line-height:1;letter-spacing:4px;
+/* ===== HERO ===== */
+.hero{text-align:center;padding:26px 0 6px;position:relative}
+.hero-glow{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,59,92,.22),transparent 65%);
+  filter:blur(30px);pointer-events:none;
+}
+.emblem{position:relative;width:150px;height:150px;margin:0 auto 22px;animation:float 5.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.orbit{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(255,59,92,.3);animation:spin 14s linear infinite}
+.orbit::after{
+  content:'';position:absolute;top:-5px;left:50%;width:10px;height:10px;border-radius:50%;
+  background:var(--violet);box-shadow:0 0 12px var(--violet);
+}
+.orbit-2{inset:-16px;border-style:solid;border-color:rgba(139,92,246,.18);animation:spin 22s linear reverse infinite}
+.orbit-2::after{background:var(--g1);box-shadow:0 0 12px var(--g1)}
+.emblem-core{
+  position:absolute;inset:26px;border-radius:50%;
+  background:linear-gradient(140deg,var(--g1),var(--pink) 55%,var(--violet));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 14px 44px rgba(255,59,92,.5),0 0 40px rgba(139,92,246,.35),inset 0 0 24px rgba(255,255,255,.18);
+}
+.emblem-core::before{
+  content:'';position:absolute;inset:5px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.35);
+}
+.emblem-core svg{width:44px;height:44px;color:#fff;filter:drop-shadow(0 3px 10px rgba(0,0,0,.35))}
+
+.h-title{font-family:'Orbitron';line-height:.95;letter-spacing:5px;position:relative}
+.h-devil{font-size:46px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,59,92,.4)}
+.h-pred{
+  font-size:46px;font-weight:900;
   background:linear-gradient(135deg,var(--g1),var(--pink),var(--violet),var(--g1));
   background-size:300% 100%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:titleFlow 6s linear infinite;
+  animation:flow 6s linear infinite;
 }
-@keyframes titleFlow{0%{background-position:0% 0}100%{background-position:300% 0}}
-.sub{
-  font-family:'Exo 2';font-size:11px;font-weight:600;color:var(--muted);
-  letter-spacing:5px;margin-top:10px;text-transform:uppercase;
+@keyframes flow{0%{background-position:0 0}100%{background-position:300% 0}}
+.h-sub{
+  font-family:'Orbitron';font-size:9px;font-weight:600;color:var(--muted);
+  letter-spacing:6px;margin-top:14px;text-transform:uppercase;
 }
-.ver{
-  display:inline-flex;align-items:center;margin-top:10px;
-  padding:5px 14px;border-radius:100px;
-  background:rgba(255,59,92,.08);border:1px solid rgba(255,59,92,.2);
-  font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--g1);letter-spacing:2px;
-}
-
-/* FEATURES */
-.feat{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
-.feat-card{
-  width:90px;padding:14px 8px 12px;border-radius:12px;
-  background:var(--card);border:1px solid var(--border);
-  backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;gap:10px;
-  transition:all .3s ease;cursor:default;
-}
-.feat-card:hover{transform:translateY(-5px);border-color:rgba(255,59,92,.3);box-shadow:0 8px 30px rgba(255,59,92,.1)}
-.feat-ico{
-  width:36px;height:36px;border-radius:10px;
+.h-ver{
+  display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  padding:6px 16px;border-radius:100px;
   background:linear-gradient(135deg,rgba(255,59,92,.14),rgba(139,92,246,.14));
-  border:1px solid rgba(255,59,92,.18);
-  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,59,92,.25);
+  font-family:'Orbitron';font-size:9px;font-weight:700;color:var(--g2);letter-spacing:2.5px;
 }
-.feat-ico svg{width:20px;height:20px;color:var(--g1)}
-.feat-lbl{font-family:'Orbitron';font-size:9px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.h-ver i{width:5px;height:5px;border-radius:50%;background:var(--g1);box-shadow:0 0 8px var(--g1)}
 
-/* STATS */
-.stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
-.stat{
-  padding:14px 22px;border-radius:14px;
-  background:var(--card);border:1px solid var(--border);
-  backdrop-filter:blur(20px);text-align:center;min-width:120px;
+/* ===== PILLS ===== */
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.pill{
+  display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;
+  background:var(--card);border:1px solid var(--border);backdrop-filter:blur(14px);
+  font-family:'Orbitron';font-size:8.5px;font-weight:700;letter-spacing:1.6px;color:var(--dim);
   transition:all .3s ease;
 }
-.stat:hover{border-color:rgba(255,59,92,.25);transform:translateY(-3px)}
-.stat-val{
-  font-family:'Orbitron';font-size:22px;font-weight:900;
-  background:linear-gradient(135deg,var(--g1),var(--pink),var(--violet));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  line-height:1.2;
-}
-.stat-lbl{font-family:'Exo 2';font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.pill:hover{transform:translateY(-3px);border-color:rgba(255,59,92,.35);box-shadow:0 8px 22px rgba(255,59,92,.12)}
+.pill svg{width:13px;height:13px;color:var(--g1)}
+.pill b{color:#fff;font-weight:800}
 
-/* BUTTONS */
-.btns{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
-.btn{
-  height:48px;padding:0 28px;border-radius:12px;
-  font-family:'Orbitron';font-size:12px;font-weight:700;letter-spacing:2px;
-  cursor:pointer;border:none;display:inline-flex;align-items:center;gap:10px;
-  transition:all .3s ease;text-decoration:none;text-transform:uppercase;
+/* ===== BENTO ===== */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.b-card{
+  position:relative;border-radius:18px;padding:16px 15px;
+  background:var(--card);border:1px solid var(--border);backdrop-filter:blur(16px);
+  overflow:hidden;transition:all .35s ease;
 }
-.btn:active{transform:scale(.96)}
+.b-card:hover{transform:translateY(-4px);border-color:rgba(255,59,92,.32);box-shadow:0 14px 34px rgba(255,59,92,.1)}
+.b-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--g1),var(--violet),transparent);
+  opacity:.7;
+}
+.b-wide{grid-column:1/-1}
+.b-ico{
+  width:38px;height:38px;border-radius:11px;margin-bottom:11px;
+  background:linear-gradient(135deg,rgba(255,59,92,.16),rgba(139,92,246,.16));
+  border:1px solid rgba(255,59,92,.22);
+  display:flex;align-items:center;justify-content:center;
+}
+.b-ico svg{width:19px;height:19px;color:var(--g1)}
+.b-title{font-family:'Orbitron';font-size:11px;font-weight:800;letter-spacing:2px;color:#fff;margin-bottom:5px}
+.b-desc{font-size:11.5px;line-height:1.45;color:var(--muted);font-weight:500}
+
+/* live bars in wide card */
+.b-live{display:flex;align-items:center;gap:14px}
+.b-live .b-ico{margin-bottom:0;flex-shrink:0}
+.bars{display:flex;align-items:flex-end;gap:4px;height:34px;flex:1}
+.bars i{
+  flex:1;border-radius:3px 3px 0 0;
+  background:linear-gradient(to top,var(--g3),var(--g1));
+  animation:bar 1.4s ease-in-out infinite alternate;min-height:5px;
+}
+.bars i:nth-child(2){animation-delay:.15s;background:linear-gradient(to top,var(--g3),var(--pink))}
+.bars i:nth-child(3){animation-delay:.3s}
+.bars i:nth-child(4){animation-delay:.45s;background:linear-gradient(to top,var(--violet),var(--pink))}
+.bars i:nth-child(5){animation-delay:.6s}
+.bars i:nth-child(6){animation-delay:.75s;background:linear-gradient(to top,var(--g3),var(--g1))}
+.bars i:nth-child(7){animation-delay:.9s}
+@keyframes bar{0%{height:18%}100%{height:100%}}
+
+/* ===== STEPS ===== */
+.steps{margin-top:22px;padding:16px 15px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(16px)}
+.steps-h{font-family:'Orbitron';font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.steps-h::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,59,92,.35),transparent)}
+.step{display:flex;gap:13px;align-items:flex-start;position:relative;padding-bottom:15px}
+.step:last-child{padding-bottom:0}
+.step:not(:last-child)::before{
+  content:'';position:absolute;left:14px;top:32px;bottom:2px;width:1px;
+  background:linear-gradient(to bottom,rgba(255,59,92,.4),rgba(139,92,246,.15));
+}
+.step-n{
+  width:29px;height:29px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(255,59,92,.18),rgba(139,92,246,.18));
+  border:1px solid rgba(255,59,92,.3);
+  font-family:'Orbitron';font-size:10px;font-weight:800;color:var(--g2);
+}
+.step-t{font-family:'Orbitron';font-size:10.5px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:3px;padding-top:3px}
+.step-d{font-size:11.5px;color:var(--muted);line-height:1.45;font-weight:500}
+
+/* ===== CTA ===== */
+.cta{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.btn{
+  height:54px;border-radius:15px;font-family:'Orbitron';font-size:12.5px;font-weight:800;
+  letter-spacing:2.5px;cursor:pointer;border:none;display:flex;align-items:center;
+  justify-content:center;gap:11px;transition:all .3s ease;text-decoration:none;text-transform:uppercase;
+}
+.btn:active{transform:scale(.97)}
 .btn-p{
-  position:relative;overflow:hidden;
-  background:linear-gradient(135deg,var(--g1),var(--pink) 55%,var(--violet));color:#fff;
-  box-shadow:0 4px 24px rgba(255,59,92,.4),0 0 16px rgba(139,92,246,.25);
+  position:relative;overflow:hidden;color:#fff;
+  background:linear-gradient(135deg,var(--g1),var(--pink) 55%,var(--violet));
+  box-shadow:0 8px 30px rgba(255,59,92,.45),0 0 20px rgba(139,92,246,.3);
 }
 .btn-p::after{
   content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;
-  background:linear-gradient(115deg,transparent,rgba(255,255,255,.45),transparent);
-  transform:skewX(-20deg);animation:btnShine 3s ease-in-out infinite;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-20deg);animation:shine 3s ease-in-out infinite;
 }
-@keyframes btnShine{0%{left:-80%}55%,100%{left:130%}}
-.btn-p:hover{box-shadow:0 8px 40px rgba(255,59,92,.55),0 0 24px rgba(139,92,246,.4);transform:translateY(-2px)}
-.btn-p svg{width:18px;height:18px;transition:transform .3s}
-.btn-p:hover svg{transform:translateX(3px)}
-.btn-s{
-  background:rgba(255,59,92,.05);border:1px solid rgba(255,59,92,.15);color:var(--g1);
+@keyframes shine{0%{left:-80%}55%,100%{left:130%}}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(255,59,92,.6),0 0 30px rgba(139,92,246,.4)}
+.btn-p svg{width:18px;height:18px}
+.btn-g{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,59,92,.22);color:var(--g2);
 }
-.btn-s:hover{background:rgba(255,59,92,.1);transform:translateY(-2px)}
-.btn-s svg{width:18px;height:18px}
+.btn-g:hover{background:rgba(255,59,92,.09);transform:translateY(-2px)}
+.btn-g svg{width:17px;height:17px}
 
-/* FOOTER */
-.foot{
-  padding:14px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
-}
-.foot-txt{font-family:'Orbitron';font-size:8px;font-weight:600;color:#7a3346;letter-spacing:4px;text-transform:uppercase}
-.foot svg{width:18px;height:18px;color:var(--g1);opacity:.4}
+/* ===== FOOTER ===== */
+.foot{margin-top:auto;padding-top:24px;text-align:center}
+.foot-txt{font-family:'Orbitron';font-size:7.5px;font-weight:600;color:#7a3346;letter-spacing:4px;text-transform:uppercase}
+.foot-note{font-size:10px;color:#5e2a3a;margin-top:7px;letter-spacing:.5px}
 
-/* RESPONSIVE */
-@media(max-width:480px){
-  .t-devil,.t-pred{font-size:32px;letter-spacing:2px}
-  .sub{font-size:9px;letter-spacing:3px}
-  .feat{gap:6px}
-  .feat-card{width:85px;padding:12px 8px 10px}
-  .stats{gap:8px}
-  .stat{padding:14px 20px;min-width:90px}
-  .stat-val{font-size:18px}
-  .btn{height:44px;padding:0 24px;font-size:10px}
-  .logo-box{width:90px;height:90px}
-  .logo-core{width:54px;height:54px}
-  .logo-core svg{width:26px;height:26px}
+/* ===== RESPONSIVE ===== */
+@media(max-width:430px){
+  .h-devil,.h-pred{font-size:38px;letter-spacing:3px}
+  .emblem{width:132px;height:132px}
+  .emblem-core{inset:23px}
+  .emblem-core svg{width:38px;height:38px}
+  .b-desc,.step-d{font-size:11px}
+  .btn{height:50px;font-size:11.5px}
 }
 </style>
 </head>
 <body>
 
-<div class="orb orb-a"></div>
-<div class="orb orb-b"></div>
-<div class="orb orb-c"></div>
+<div class="aur aur-1"></div>
+<div class="aur aur-2"></div>
+<div class="aur aur-3"></div>
 <div id="particles"></div>
 
-<div class="page">
+<div class="shell">
 
-<!-- STATUS -->
-<div class="sts fd">
-  <div class="sts-dot"></div>
-  AI ENGINE ACTIVE
-</div>
+<!-- TOPBAR -->
+<header class="topbar fd">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div class="brand-name">DEVIL<span>.</span></div>
+  </div>
+  <div class="live-chip"><span class="live-dot"></span>AI ENGINE ONLINE</div>
+</header>
 
-<!-- LOGO -->
-<div class="logo-sec fd" style="transition-delay:.1s">
-  <div class="logo-float">
-    <div class="logo-rings">
-      <div class="ring"></div>
-      <div class="ring"></div>
+<!-- HERO -->
+<section class="hero fd" style="transition-delay:.08s">
+  <div class="hero-glow"></div>
+
+  <div class="emblem">
+    <div class="orbit"></div>
+    <div class="orbit orbit-2"></div>
+    <div class="emblem-core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     </div>
-    <div class="logo-box">
-      <div class="logo-core">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </div>
-    </div>
+  </div>
+
+  <h1 class="h-title">
+    <div class="h-devil">DEVIL</div>
+    <div class="h-pred">PREDICTOR</div>
+  </h1>
+  <div class="h-sub">Quantum Prediction Engine</div>
+  <div class="h-ver"><i></i>V4.0 PRO BUILD</div>
+</section>
+
+<!-- PILLS -->
+<div class="pills fd" style="transition-delay:.16s">
+  <div class="pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <b>99%</b> ACCURACY
+  </div>
+  <div class="pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    24/7 LIVE
+  </div>
+  <div class="pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    REAL-TIME
   </div>
 </div>
 
-<!-- TITLE -->
-<div class="title-sec fd" style="transition-delay:.15s">
-  <div class="t-devil">DEVIL</div>
-  <div class="t-pred">PREDICTOR</div>
-  <div class="sub">QUANTUM AI ENGINE</div>
-  <div class="ver">v4.0 PRO</div>
-</div>
+<!-- BENTO FEATURES -->
+<div class="bento fd" style="transition-delay:.24s">
 
-<!-- FEATURES -->
-<div class="feat fd" style="transition-delay:.2s">
-  <div class="feat-card">
-    <div class="feat-ico">
+  <div class="b-card b-wide">
+    <div class="b-live">
+      <div class="b-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="b-title">LIVE SIGNAL FEED</div>
+        <div class="b-desc">Real-time draw sync &amp; instant prediction lock every round.</div>
+      </div>
+      <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+
+  <div class="b-card">
+    <div class="b-ico">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     </div>
-    <div class="feat-lbl">Secure</div>
+    <div class="b-title">SECURE</div>
+    <div class="b-desc">Device-locked access with encrypted sessions.</div>
   </div>
-  <div class="feat-card">
-    <div class="feat-ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+
+  <div class="b-card">
+    <div class="b-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg>
     </div>
-    <div class="feat-lbl">Real-Time</div>
+    <div class="b-title">QUANTUM AI</div>
+    <div class="b-desc">Neural pattern engine with deep analysis.</div>
   </div>
-  <div class="feat-card">
-    <div class="feat-ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+
+</div>
+
+<!-- STEPS -->
+<div class="steps fd" style="transition-delay:.32s">
+  <div class="steps-h">HOW IT WORKS</div>
+
+  <div class="step">
+    <div class="step-n">01</div>
+    <div>
+      <div class="step-t">CREATE ACCOUNT</div>
+      <div class="step-d">Login with your key &amp; activate the engine.</div>
     </div>
-    <div class="feat-lbl">Fast</div>
+  </div>
+
+  <div class="step">
+    <div class="step-n">02</div>
+    <div>
+      <div class="step-t">SET YOUR TARGET</div>
+      <div class="step-d">Choose mode &amp; target goal — AI calibrates instantly.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-n">03</div>
+    <div>
+      <div class="step-t">GET PREDICTIONS</div>
+      <div class="step-d">Lock the signal each round &amp; track your progress.</div>
+    </div>
   </div>
 </div>
 
-<!-- STATS -->
-<div class="stats fd" style="transition-delay:.25s">
-  <div class="stat">
-    <div class="stat-val">99%</div>
-    <div class="stat-lbl">Accuracy</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">24/7</div>
-    <div class="stat-lbl">Online</div>
-  </div>
-</div>
-
-<!-- BUTTONS -->
-<div class="btns fd" style="transition-delay:.3s">
+<!-- CTA -->
+<div class="cta fd" style="transition-delay:.4s">
   <a href="login.html" class="btn btn-p">
     GET STARTED
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
   </a>
-  <a href="https://t.me/LORD_x_STYLO" target="_blank" class="btn btn-s">
+  <a href="https://t.me/LORD_x_STYLO" target="_blank" class="btn btn-g">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-    TELEGRAM
+    JOIN TELEGRAM
   </a>
 </div>
 
 <!-- FOOTER -->
-<div class="foot fd" style="transition-delay:.4s">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 2-1.5 3.5-3 4.5V12h2a4 4 0 1 1 0 8h-2v-2a4 4 0 1 1-4-4V4a4 4 0 0 1 4-4z"/></svg>
-  <div class="foot-txt">SECURE &bull; QUANTUM &bull; FAST</div>
+<div class="foot fd" style="transition-delay:.48s">
+  <div class="foot-txt">SECURE &bull; QUANTUM &bull; REAL-TIME</div>
+  <div class="foot-note">v4.0 &mdash; Play smart. Stay in control.</div>
 </div>
 
 </div>
@@ -297,7 +389,7 @@ body::before{
 // Particles
 (function(){
   const c=document.getElementById('particles');
-  for(let i=0;i<30;i++){
+  for(let i=0;i<26;i++){
     const p=document.createElement('div');
     p.className='ptcl';
     const s=Math.random()*2.5+1;
@@ -315,11 +407,11 @@ body::before{
   }
 })();
 
-// Fade-up observer
+// Entrance reveal
 (function(){
   const obs=new IntersectionObserver(es=>{
     es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
-  },{threshold:.15});
+  },{threshold:.12});
   document.querySelectorAll('.fd').forEach(el=>obs.observe(el));
 })();
 </script>
