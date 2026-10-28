@@ -9,15 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --emerald: #10b981;
-  --emerald-light: #34d399;
-  --emerald-dark: #059669;
-  --bg: #030712;
+  --emerald: #ff3b5c;
+  --emerald-light: #ff7a94;
+  --emerald-dark: #c41e42;
+  --violet: #8b5cf6;
+  --pink: #ff2d78;
+  --bg: #08040c;
   --card: rgba(255,255,255,.02);
   --border: rgba(255,255,255,.06);
-  --text: #f9fafb;
-  --muted: #6b7280;
-  --dim: #374151;
+  --text: #fff5f7;
+  --muted: #8a5a68;
+  --dim: #3d2530;
 }
 
 * {
@@ -64,18 +66,20 @@ body {
 .blob-2 {
   width: 500px;
   height: 500px;
-  background: var(--emerald-light);
+  background: var(--violet);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  opacity: 0.12;
 }
 
 .blob-3 {
   width: 550px;
   height: 550px;
-  background: var(--emerald-dark);
+  background: var(--pink);
   bottom: -180px;
   right: -80px;
+  opacity: 0.12;
 }
 
 /* Grid pattern */
@@ -83,8 +87,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(16,185,129,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16,185,129,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255,59,92,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,59,92,0.05) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -179,6 +183,18 @@ body {
   animation: spin 4s linear infinite;
 }
 
+/* Conic neon aura */
+.ring-glow {
+  position: absolute;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 55%, var(--emerald) 75%, var(--violet) 92%, transparent 100%);
+  filter: blur(14px);
+  opacity: .55;
+  animation: spin 5s linear infinite;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -188,14 +204,14 @@ body {
   width: 72px;
   height: 72px;
   border-radius: 20px;
-  background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+  background: linear-gradient(135deg, var(--emerald), var(--pink) 55%, var(--violet));
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 0 40px rgba(16,185,129,0.25),
-    0 0 80px rgba(16,185,129,0.1),
-    inset 0 1px 0 rgba(255,255,255,0.15);
+    0 0 40px rgba(255,59,92,0.3),
+    0 0 80px rgba(139,92,246,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.25);
   animation: floatLogo 3s ease-in-out infinite;
 }
 
@@ -220,8 +236,17 @@ body {
   font-size: 36px;
   font-weight: 700;
   letter-spacing: 4px;
-  color: var(--text);
   text-transform: uppercase;
+  background: linear-gradient(90deg, #ffffff, #ff7a94, #8b5cf6, #ffffff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleShimmer 6s linear infinite;
+}
+@keyframes titleShimmer {
+  0% { background-position: 0% 0; }
+  100% { background-position: 300% 0; }
 }
 
 /* Subtitle */
@@ -245,20 +270,28 @@ body {
 
 .progress-track {
   width: 280px;
-  height: 3px;
-  background: rgba(255,255,255,.05);
+  height: 4px;
+  background: rgba(255,255,255,.06);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.6);
 }
 
 .progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--emerald), var(--emerald-light));
+  background: linear-gradient(90deg, var(--emerald), var(--pink), var(--violet));
+  background-size: 200% 100%;
   border-radius: 4px;
   transition: width 0.1s linear;
   position: relative;
+  animation: barFlow 2s linear infinite;
+  box-shadow: 0 0 12px rgba(255,59,92,.6), 0 0 24px rgba(139,92,246,.35);
+}
+@keyframes barFlow {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .progress-dot {
@@ -269,8 +302,8 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--emerald-light);
-  box-shadow: 0 0 12px var(--emerald), 0 0 24px rgba(16,185,129,0.4);
+  background: #fff;
+  box-shadow: 0 0 12px var(--emerald), 0 0 24px var(--violet);
 }
 
 /* Loading text */
@@ -296,10 +329,17 @@ body {
 }
 
 .footer-text {
+  display: inline-block;
+  padding: 8px 24px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 500;
-  color: var(--dim);
+  color: rgba(255,255,255,.4);
   letter-spacing: 6px;
   text-transform: uppercase;
 }
@@ -320,7 +360,7 @@ body {
 }
 
 .btn:hover {
-  box-shadow: 0 0 20px rgba(16,185,129,.3);
+  box-shadow: 0 0 20px rgba(255,59,92,.3);
   transform: translateY(-1px);
 }
 
@@ -329,7 +369,7 @@ body {
 }
 
 /* PARTICLES */
-.ptcl{position:fixed;width:2px;height:2px;background:#10b981;border-radius:50%;pointer-events:none;z-index:1;opacity:0}
+.ptcl{position:fixed;width:2px;height:2px;background:#ff3b5c;border-radius:50%;pointer-events:none;z-index:1;opacity:0}
 @keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.6}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
 </style>
 </head>
@@ -349,6 +389,7 @@ body {
 <!-- Center Loader -->
 <div class="loader-wrap" id="loader">
   <div class="logo-area">
+    <div class="ring-glow"></div>
     <div class="ring ring-1"></div>
     <div class="ring ring-2"></div>
     <div class="ring ring-3"></div>

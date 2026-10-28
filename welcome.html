@@ -10,9 +10,10 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --g1:#10b981;--g2:#34d399;--g3:#059669;--g4:#6ee7b7;
-  --bg:#060d06;--card:rgba(16,185,129,.04);--border:rgba(16,185,129,.12);
-  --text:#f0fdf4;--dim:#4ade80;--muted:#166534;
+  --g1:#ff3b5c;--g2:#ff7a94;--g3:#c41e42;--g4:#ff9fb4;
+  --violet:#8b5cf6;--pink:#ff2d78;
+  --bg:#0a0509;--card:rgba(255,59,92,.04);--border:rgba(255,59,92,.12);
+  --text:#fff5f7;--dim:#ff8fa3;--muted:#a86a7c;
 }
 html{scroll-behavior:smooth}
 body{
@@ -24,14 +25,14 @@ body{
 body::before{
   content:'';position:fixed;inset:0;
   background:
-    linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);
+    linear-gradient(rgba(255,59,92,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,59,92,.03) 1px,transparent 1px);
   background-size:50px 50px;z-index:0;pointer-events:none;
 }
 .orb{position:fixed;border-radius:50%;filter:blur(100px);z-index:0;pointer-events:none;opacity:.3}
-.orb-a{width:500px;height:500px;background:rgba(16,185,129,.35);top:-150px;left:-120px;animation:ob1 16s ease-in-out infinite}
-.orb-b{width:400px;height:400px;background:rgba(5,150,105,.3);bottom:-120px;right:-80px;animation:ob2 20s ease-in-out infinite}
-.orb-c{width:280px;height:280px;background:rgba(52,211,153,.2);top:45%;left:55%;animation:ob3 14s ease-in-out infinite}
+.orb-a{width:500px;height:500px;background:rgba(255,59,92,.35);top:-150px;left:-120px;animation:ob1 16s ease-in-out infinite}
+.orb-b{width:400px;height:400px;background:rgba(139,92,246,.3);bottom:-120px;right:-80px;animation:ob2 20s ease-in-out infinite}
+.orb-c{width:280px;height:280px;background:rgba(255,45,120,.2);top:45%;left:55%;animation:ob3 14s ease-in-out infinite}
 @keyframes ob1{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,50px)}}
 @keyframes ob2{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-70px)}}
 @keyframes ob3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
@@ -64,20 +65,30 @@ body::before{
 .logo-float{animation:logoF 5s ease-in-out infinite;transform-style:preserve-3d}
 @keyframes logoF{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .logo-rings{position:absolute;inset:-30px;pointer-events:none}
-.ring{position:absolute;inset:0;border:1px solid rgba(16,185,129,.15);border-radius:50%;animation:ringP 3s ease-in-out infinite}
+.ring{position:absolute;inset:0;border:1px solid rgba(255,59,92,.15);border-radius:50%;animation:ringP 3s ease-in-out infinite}
 .ring:nth-child(2){inset:-20px;animation-delay:.7s;opacity:.5}
 @keyframes ringP{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.08);opacity:.6}}
 .logo-box{
   width:110px;height:110px;border-radius:22px;
-  background:rgba(16,185,129,.05);border:1px solid var(--border);
+  background:rgba(255,59,92,.05);border:1px solid var(--border);
   backdrop-filter:blur(30px);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 80px rgba(16,185,129,.12),0 0 160px rgba(16,185,129,.05);position:relative;z-index:2;
+  box-shadow:0 0 80px rgba(255,59,92,.12),0 0 160px rgba(139,92,246,.06);position:relative;z-index:2;
 }
+/* rotating conic neon border */
+.logo-box::after{
+  content:'';position:absolute;inset:-3px;border-radius:25px;padding:2px;
+  background:conic-gradient(from 0deg,var(--violet),transparent 35%,var(--g1) 55%,transparent 80%,var(--violet));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  animation:ringSpin 4s linear infinite;pointer-events:none;
+}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
 .logo-core{
   width:64px;height:64px;border-radius:16px;
-  background:linear-gradient(135deg,var(--g1),var(--g3));
+  background:linear-gradient(135deg,var(--g1),var(--pink) 60%,var(--violet));
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 32px rgba(16,185,129,.4);
+  box-shadow:0 8px 32px rgba(255,59,92,.4),0 0 24px rgba(139,92,246,.3);
 }
 .logo-core svg{width:32px;height:32px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
 
@@ -86,9 +97,12 @@ body::before{
 .t-devil{font-family:'Orbitron';font-size:40px;font-weight:900;color:#fff;letter-spacing:4px;line-height:1}
 .t-pred{
   font-family:'Orbitron';font-size:40px;font-weight:900;line-height:1;letter-spacing:4px;
-  background:linear-gradient(135deg,var(--g1),var(--g2),var(--g4));
+  background:linear-gradient(135deg,var(--g1),var(--pink),var(--violet),var(--g1));
+  background-size:300% 100%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titleFlow 6s linear infinite;
 }
+@keyframes titleFlow{0%{background-position:0% 0}100%{background-position:300% 0}}
 .sub{
   font-family:'Exo 2';font-size:11px;font-weight:600;color:var(--muted);
   letter-spacing:5px;margin-top:10px;text-transform:uppercase;
@@ -96,7 +110,7 @@ body::before{
 .ver{
   display:inline-flex;align-items:center;margin-top:10px;
   padding:5px 14px;border-radius:100px;
-  background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);
+  background:rgba(255,59,92,.08);border:1px solid rgba(255,59,92,.2);
   font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--g1);letter-spacing:2px;
 }
 
@@ -108,10 +122,11 @@ body::before{
   backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;gap:10px;
   transition:all .3s ease;cursor:default;
 }
-.feat-card:hover{transform:translateY(-5px);border-color:rgba(16,185,129,.3);box-shadow:0 8px 30px rgba(16,185,129,.1)}
+.feat-card:hover{transform:translateY(-5px);border-color:rgba(255,59,92,.3);box-shadow:0 8px 30px rgba(255,59,92,.1)}
 .feat-ico{
   width:36px;height:36px;border-radius:10px;
-  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+  background:linear-gradient(135deg,rgba(255,59,92,.14),rgba(139,92,246,.14));
+  border:1px solid rgba(255,59,92,.18);
   display:flex;align-items:center;justify-content:center;
 }
 .feat-ico svg{width:20px;height:20px;color:var(--g1)}
@@ -125,10 +140,10 @@ body::before{
   backdrop-filter:blur(20px);text-align:center;min-width:120px;
   transition:all .3s ease;
 }
-.stat:hover{border-color:rgba(16,185,129,.25);transform:translateY(-3px)}
+.stat:hover{border-color:rgba(255,59,92,.25);transform:translateY(-3px)}
 .stat-val{
   font-family:'Orbitron';font-size:22px;font-weight:900;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
+  background:linear-gradient(135deg,var(--g1),var(--pink),var(--violet));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   line-height:1.2;
 }
@@ -144,23 +159,30 @@ body::before{
 }
 .btn:active{transform:scale(.96)}
 .btn-p{
-  background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;
-  box-shadow:0 4px 24px rgba(16,185,129,.35);
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--g1),var(--pink) 55%,var(--violet));color:#fff;
+  box-shadow:0 4px 24px rgba(255,59,92,.4),0 0 16px rgba(139,92,246,.25);
 }
-.btn-p:hover{box-shadow:0 8px 40px rgba(16,185,129,.5);transform:translateY(-2px)}
+.btn-p::after{
+  content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-20deg);animation:btnShine 3s ease-in-out infinite;
+}
+@keyframes btnShine{0%{left:-80%}55%,100%{left:130%}}
+.btn-p:hover{box-shadow:0 8px 40px rgba(255,59,92,.55),0 0 24px rgba(139,92,246,.4);transform:translateY(-2px)}
 .btn-p svg{width:18px;height:18px;transition:transform .3s}
 .btn-p:hover svg{transform:translateX(3px)}
 .btn-s{
-  background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);color:var(--g1);
+  background:rgba(255,59,92,.05);border:1px solid rgba(255,59,92,.15);color:var(--g1);
 }
-.btn-s:hover{background:rgba(16,185,129,.1);transform:translateY(-2px)}
+.btn-s:hover{background:rgba(255,59,92,.1);transform:translateY(-2px)}
 .btn-s svg{width:18px;height:18px}
 
 /* FOOTER */
 .foot{
   padding:14px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
 }
-.foot-txt{font-family:'Orbitron';font-size:8px;font-weight:600;color:#14532d;letter-spacing:4px;text-transform:uppercase}
+.foot-txt{font-family:'Orbitron';font-size:8px;font-weight:600;color:#7a3346;letter-spacing:4px;text-transform:uppercase}
 .foot svg{width:18px;height:18px;color:var(--g1);opacity:.4}
 
 /* RESPONSIVE */
